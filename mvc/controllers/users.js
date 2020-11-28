@@ -28,9 +28,13 @@ const registerUser = function({body}, res) {
 
   user.save((err, newUser)=> {
     if(err){
-      res.status(400).json(err)
+      if(err.errmsg && err.errmsg.includes('duplicate key error')) {
+        return res.json( {message: 'The email is already in use.'} )
+      }
+      return res.json( {message: 'Something went wrong.'} )
     }else {
-      res.status(201).json({ message: "Created User", user : newUser })
+      const token = newUser.getJwt();
+      res.status(201).json({token});
     }
   })
 }
@@ -42,14 +46,20 @@ const loginUser = function(req, res){
   passport.authenticate('local', (err, user, info) => {
     if (err) { return res.status(404).json(err) }
     if(user) {
-      res.status(201).json({ message: "Logged In." });
+      const token = user.getJwt();
+      res.status(201).json({ token });
     } else {
-      res.status(401).json(info);
+      res.json(info);
     }
   })(req, res);
 }
 
+const generateFeed = function(req, res) {
+  res.status(200).json({ message: 'Generating posts for a users feed.' })
+}
+
 module.exports = {
   registerUser,
-  loginUser
+  loginUser,
+  generateFeed
 }

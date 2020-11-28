@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../auth.service';
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-page-feed',
@@ -7,9 +9,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PageFeedComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    public auth: AuthService,
+    private api: ApiService
+  ) { }
 
   ngOnInit(): void {
+    let requestObject = {
+      type: 'GET',
+      location: 'users/generate-feed',
+      authorize: true
+    }
+
+    this.api.makeRequest(requestObject).then((val)=> {
+      console.log(val);
+    })
   }
 
 }

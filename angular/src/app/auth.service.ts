@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
-
+import { LocalStorageService } from './local-storage.service';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor( private router: Router ) { }
+  constructor( 
+    private router: Router,
+    public storage: LocalStorageService ) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     const loggedIn = this.isLoggedIn();
@@ -28,6 +30,14 @@ export class AuthService {
   }
 
   isLoggedIn(){
+    if(this.storage.getToken()) {
+      return true
+    }
     return false;
+  }
+
+  logout(){
+    this.storage.removeToken();
+    this.router.navigate(['/login']);
   }
 }
