@@ -17,10 +17,23 @@ export class PageSearchesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.route.snapshot.params)
+    this.subscription = this.route.params.subscribe( params => {
+      this.query = params.query;
+      this.getResults();
+    })
   }
-
+  public subscription;
   public results;
-  public query = this.route.snapshot.params
+  public query = this.route.snapshot.params.query;
 
+  private getResults() {
+    let requestObject = {
+      location: `users/get-search-results?query=${this.query}`,
+      type: 'GET',
+      authorize: true
+    }
+    this.api.makeRequest(requestObject).then((val)=>{
+      this.results = val.results
+    })
+  }
 }

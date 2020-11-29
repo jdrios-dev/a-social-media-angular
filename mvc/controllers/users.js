@@ -57,8 +57,23 @@ const generateFeed = function(req, res) {
   res.status(200).json({ message: 'Generating posts for a users feed.' })
 }
 
-const getSearchResults = function ({query}, res) {
-  return res.json({ message: 'Getting search results', query: query.query })
+const getSearchResults = function ({query, payload}, res) {
+
+  if(!query.query) { return res.json( {err: "Missing Query"} ); }
+  User.find({ name: { $regex: query.query, $options: 'i' } }, 'name', (err, results) => {
+    if (err) { return res.json({ err: err }); }
+    results = results.slice(0, 20);
+
+    for (let i = 0; i < results.length; i++) {
+      if(results[i]._id == payload._id ){
+        results.splice(i, 1);
+        break;
+      }
+    
+    }
+
+    return res.status(200).json({ message: 'Getting search results', results: results })
+  });
 }
 
 const deleteAllUsers = function (req, res) {

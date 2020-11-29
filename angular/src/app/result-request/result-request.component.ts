@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-result-request',
@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./result-request.component.css']
 })
 export class ResultRequestComponent implements OnInit {
+
+  @Input() resultRequest;
 
   constructor() { }
 
