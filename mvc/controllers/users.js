@@ -20,8 +20,7 @@ const registerUser = function({body}, res) {
 
   const user = new User();
 
-  user.firstname = body.first_name.trim();
-  user.lastname = body.last_name.trim();
+  user.name = body.first_name.trim() + ' ' + body.last_name.trim();
 
   user.email = body.email;
   user.setPassword(body.password);
@@ -58,8 +57,22 @@ const generateFeed = function(req, res) {
   res.status(200).json({ message: 'Generating posts for a users feed.' })
 }
 
+const getSearchResults = function ({query}, res) {
+  return res.json({ message: 'Getting search results', query: query.query })
+}
+
+const deleteAllUsers = function (req, res) {
+  User.deleteMany({}, (err, info)=> {
+    if (err) { return res.send({ error: err }); }
+    return res.json({ message: 'Deleted All Users', info: info })
+  });
+}
+
 module.exports = {
+  deleteAllUsers,
   registerUser,
   loginUser,
-  generateFeed
+  generateFeed,
+  getSearchResults,
+  deleteAllUsers
 }

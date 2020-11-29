@@ -57,11 +57,7 @@ const messageSchema = new mongoose.Schema({
 
 
 const userSchema = new mongoose.Schema({
-  firstname: {
-    type: String,
-    required: true
-  },
-  lastname: {
+  name: {
     type: String,
     required: true
   },
@@ -83,7 +79,6 @@ const userSchema = new mongoose.Schema({
   new_message_notifications: { type: Number, default: 0 },
   new_notifications: { type: Number, default: 0 }
 });
-
 
 userSchema.methods.setPassword = function(password) {
   this.salt = crypto.randomBytes(64).toString('hex');
