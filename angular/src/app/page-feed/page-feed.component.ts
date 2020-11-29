@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth.service';
+
 import { ApiService } from '../api.service';
 
 @Component({
@@ -10,7 +10,6 @@ import { ApiService } from '../api.service';
 export class PageFeedComponent implements OnInit {
 
   constructor(
-    public auth: AuthService,
     private api: ApiService
   ) { }
 
