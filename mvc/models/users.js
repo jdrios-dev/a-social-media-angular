@@ -75,7 +75,7 @@ const userSchema = new mongoose.Schema({
   posts: [postSchema],
   messages: [messageSchema],
   notifications: [String],
-  profile_image: String,
+  profile_image: {type: String, default: 'default-avatar'},
   new_message_notifications: { type: Number, default: 0 },
   new_notifications: { type: Number, default: 0 }
 });

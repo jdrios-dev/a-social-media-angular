@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api.service';
 import { LocalStorageService } from '../local-storage.service';
 import { Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 @Component({
   selector: 'app-page-register',
   templateUrl: './page-register.component.html',
@@ -12,9 +13,11 @@ export class PageRegisterComponent implements OnInit {
   constructor(
     private api: ApiService,
     private storage: LocalStorageService,
-    private router: Router ) { }
+    private router: Router,
+    private title: Title, ) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void { 
+    this.title.setTitle('A Social Media - Register');}
 
   public formError = '';
 

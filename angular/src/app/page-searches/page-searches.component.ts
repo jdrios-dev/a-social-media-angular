@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../api.service';
-
+import { Title } from '@angular/platform-browser';
 
 
 @Component({
@@ -13,10 +13,12 @@ export class PageSearchesComponent implements OnInit {
 
   constructor(
     private api: ApiService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private title: Title,
   ) { }
 
   ngOnInit(): void {
+    this.title.setTitle('Search');
     this.subscription = this.route.params.subscribe( params => {
       this.query = params.query;
       this.getResults();
