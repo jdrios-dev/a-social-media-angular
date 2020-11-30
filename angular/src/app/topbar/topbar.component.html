@@ -1,5 +1,4 @@
 
-
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
 	<!-- Sidebar Toggle (Topbar) -->
@@ -49,7 +48,7 @@
 		<li class="nav-item dropdown no-arrow mx-1">
 			<a class="nav-link dropdown-toggle" routerLink="/friend-request">
 				<i class="fas fa-users"></i>
-				<span class="badge badge-danger badge-counter">11</span>
+				<span *ngIf="numberOfFriendRequests" class="badge badge-danger badge-counter">{{numberOfFriendRequests}}</span>
 			</a>
 		</li>
 
@@ -59,7 +58,7 @@
 				aria-haspopup="true" aria-expanded="false">
 				<i class="fas fa-bell fa-fw"></i>
 				<!-- Counter - Alerts -->
-				<span class="badge badge-danger badge-counter">3+</span>
+				<span *ngIf="userData" class="badge badge-danger badge-counter">{{userData.new_notifications}}</span>
 			</a>
 			<!-- Dropdown - Alerts -->
 			<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -109,7 +108,7 @@
 				aria-haspopup="true" aria-expanded="false">
 				<i class="fas fa-envelope fa-fw"></i>
 				<!-- Counter - Messages -->
-				<span class="badge badge-danger badge-counter">7</span>
+				<!-- <span *ngIf="userData.new_message_notifications" class="badge badge-danger badge-counter">{{userData.new_message_notifications}}</span> -->
 			</a>
 			<!-- Dropdown - Messages -->
 			<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -171,7 +170,7 @@
 		<li class="nav-item dropdown no-arrow">
 			<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
 				aria-haspopup="true" aria-expanded="false">
-				<span class="mr-2 d-none d-lg-inline text-gray-600 small">{{userName}}</span>
+				<span class="mr-2 d-none d-lg-inline text-gray-600 small">{{usersName}}</span>
 				<img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
 			</a>
 			<!-- Dropdown - User Information -->
@@ -193,3 +192,5 @@
 		</li>
 	</ul>
 </nav>
+
+<div *ngIf="alertMessage" class="mx-4 alert alert-primary text-primary mb-4">{{alertMessage}}</div>

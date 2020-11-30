@@ -1,4 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { ApiService } from '../api.service';
+
+
 
 @Component({
   selector: 'app-result-request',
@@ -9,7 +12,9 @@ export class ResultRequestComponent implements OnInit {
 
   @Input() resultRequest;
 
-  constructor() { }
+  constructor(
+    public api: ApiService,
+  ) { }
 
   ngOnInit(): void {
   }

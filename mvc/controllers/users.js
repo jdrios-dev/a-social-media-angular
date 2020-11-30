@@ -2,6 +2,17 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
+
+
+const containsDuplicate = function(array){
+  array.sort();
+  for(let i = 0; i < array.length; i++){
+    if(array[i] == array[i + 1]){
+      return true;
+    }
+  }
+}
+
 const registerUser = function({body}, res) {
 
   if(
@@ -58,7 +69,6 @@ const generateFeed = function(req, res) {
 }
 
 const getSearchResults = function ({query, payload}, res) {
-
   if(!query.query) { return res.json( {err: "Missing Query"} ); }
   User.find({ name: { $regex: query.query, $options: 'i' } }, 'name', (err, results) => {
     if (err) { return res.json({ err: err }); }
@@ -69,12 +79,39 @@ const getSearchResults = function ({query, payload}, res) {
         results.splice(i, 1);
         break;
       }
-    
     }
-
     return res.status(200).json({ message: 'Getting search results', results: results })
   });
 }
+
+const makeFriendRequest = function({params}, res) {
+  User.findById(params.to, (err, user) => {
+
+    if( err ){ return res.json({ err: err }); }
+
+    if(containsDuplicate([params.from, ...user.friend_requests])){
+      return res.json({ message: 'Friend request is already sent.' });
+    }
+
+    user.friend_requests.push(params.from);
+    user.save((err, user)=>{
+      if( err ){ return res.json({ err: err }); }
+      return res.statusJson(201, { message: 'Successfully sent a friend request. ' });
+    });
+  });
+}
+
+const getUserData = function({params}, res){
+  User.findById(params.userid, (err, user) => {
+    if( err ){ return res.json({ err: err }); }
+
+    res.statusJson(200, {user: user})
+  })
+}
+
+
+
+
 
 const deleteAllUsers = function (req, res) {
   User.deleteMany({}, (err, info)=> {
@@ -89,5 +126,7 @@ module.exports = {
   loginUser,
   generateFeed,
   getSearchResults,
-  deleteAllUsers
+  deleteAllUsers,
+  makeFriendRequest,
+  getUserData
 }

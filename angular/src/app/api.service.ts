@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { LocalStorageService } from './local-storage.service';
+import { AlertsService } from './alerts.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,9 @@ export class ApiService {
 
   constructor(
     private http: HttpClient,
-    private storage: LocalStorageService ) { }
+    private storage: LocalStorageService,
+    private alert: AlertsService,
+  ) { }
 
   private baseUrl = 'http://localhost:3000';
 
@@ -50,5 +53,24 @@ export class ApiService {
 
     console.log('Could not make the request. Make sure a type og GET ot POST is supplied.');
 
+  }
+
+  public makeFriendRequest(to: string) {
+    let from = this.storage.getParsedToken()._id;
+
+    let requestObject = {
+      location: `users/make-friend-request/${from}/${to}`,
+      type: 'POST',
+      authorize: true
+    }
+    this.makeRequest(requestObject).then((val)=> {
+      console.log(val);
+
+      if(val.statusCode === 201){
+        this.alert.onAlertEvent.emit('Successfully sent a friend request!')
+      } else {
+        this.alert.onAlertEvent.emit('Something went wrong, we could not send a friend request. Perhaps you already sent a friend request to this user.')
+      }
+    });
   }
 }
