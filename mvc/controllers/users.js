@@ -118,7 +118,48 @@ const getFriendRequests = function({query}, res){
 }
 
 const resolveFriendRequest = function({query, params}, res){
-  res.json({ message:'resolve friend', ...query, ...params })
+
+  User.findById(params.to, (err, user)=> {
+    if (err) { return res.send({ error: err }); }
+
+    for(let i = 0; i < user.friend_requests.length; i++){
+      if ( user.friend_requests[i] == params.from ) {
+        user.friend_requests.splice(i, 1);
+        break;
+      }
+    }
+
+    let promise = new Promise(function(resolve, reject) {
+      if(query.resolution == 'accept'){
+
+        if(containsDuplicate([params.from, ...user.friends])){
+          return res.json({ message: 'Duplicate error.' })
+        }
+
+        user.friends.push(params.from);
+
+        User.findById(params.from, (err, user)=> {
+          if (err) { return res.send({ error: err }); }
+          if(containsDuplicate([params.to, ...user.friends])){
+            return res.json({ message: 'Duplicate error.' })
+          }
+          user.friends.push(params.to);
+          user.save((err, user) => {
+            if (err) { return res.send({ error: err }); }
+            resolve();
+          });
+        })
+      } else {
+        resolve();
+      }
+    });
+    promise.then(()=> {
+      user.save((err, user)=> {
+        if (err) { return res.send({ error: err }); }
+        res.statusJson(201, { message:'Resolve friend request.'});
+      })
+    });
+  });
 }
 
 

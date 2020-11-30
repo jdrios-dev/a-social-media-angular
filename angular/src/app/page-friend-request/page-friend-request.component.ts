@@ -16,7 +16,6 @@ export class PageFriendRequestComponent implements OnInit {
   ngOnInit(): void {
     this.centralUserData.getUserData.subscribe((data) => {
       this.userData = data;
-      console.log(this.userData);
 
       let array = JSON.stringify(data.friend_requests);
 
@@ -36,4 +35,13 @@ export class PageFriendRequestComponent implements OnInit {
   public userData: object = {};
   public friendRequests = [];
 
+  public updateFriendRequests(id) {
+    let arr = this.friendRequests;
+    for (let i = 0; i < arr.length; i++){
+      if(arr[i]._id == id){
+        arr.splice(i, 1);
+        break;
+      }
+    }
+  }
 }
