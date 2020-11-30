@@ -20,15 +20,46 @@
       7 Mutual Friends
     </div>
   </div>
-  <div
-    *ngIf="use == 'result'"
-    class="ml-auto mr-3 mt-3 align-self-start">
+
+  <div class="ml-auto mr-3 mt-3 align-self-start">
+
     <button
+      *ngIf=" use == 'result' && !haveSentFriendRequest && !haveRecievedFriendRequest && !isFriend"
       class="btn btn-sm btn-primary rounded-pill"
-      (click)="this.api.makeFriendRequest(resultRequest._id);"
+      (click)="this.api.makeFriendRequest(resultRequest._id); haveSentFriendRequest = true"
     >
       Add Friend
     </button>
+
+    <button
+      *ngIf="haveSentFriendRequest"
+      class="btn btn-sm btn-warning rounded-pill ml-1"
+      data-toggle="modal"
+      data-target="#staticBackdrop"
+    >
+      Send Request Pending
+    </button>
+
+    <button
+      *ngIf="isFriend"
+      class="btn btn-sm btn-info rounded-pill ml-1"
+      data-toggle="modal"
+      data-target="#staticBackdrop"
+    >
+      View Profile
+    </button>
+
+    <button
+      *ngIf="use == 'request' || haveRecievedFriendRequest"
+      class="btn btn-sm btn-info rounded-pill ml-1"
+      data-toggle="modal"
+      data-target="#staticBackdrop"
+      (click)="accept(); haveRecievedFriendRequest = false; isFriend=true"
+    >
+      Accept
+    </button>
+
+
     <button
       class="btn btn-sm btn-success rounded-pill ml-1"
       data-toggle="modal"
@@ -36,28 +67,17 @@
     >
       Send Message
     </button>
-  </div>
-  <!-- //// -->
-  <div
-    *ngIf="use == 'request'"
-    class="ml-auto mr-3 mt-3 align-self-start">
+
     <button
-    (click)="accept()"
-      class="btn btn-sm btn-primary rounded-pill">
-      Accept Friend
-    </button>
-    
-    <button
-      class="btn btn-sm btn-primary rounded-pill ml-1"
+      *ngIf="use == 'request' || haveRecievedFriendRequest"
+      class="btn btn-sm btn-danger rounded-pill ml-1"
       data-toggle="modal"
       data-target="#staticBackdrop"
+      (click)="decline(); haveRecievedFriendRequest = false"
     >
-      Send Message
-    </button>
-    <button
-      (click)="decline()"
-      class="btn btn-sm btn-danger rounded-pill ml-1">
       Decline
     </button>
   </div>
+
+
 </div>

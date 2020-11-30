@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 //SERVICES
 import { LocalStorageService } from '../local-storage.service';
-import { AlertsService } from '../alerts.service';
+import { EventEmitterService } from '../event-emitter.service';
 import { AuthService } from '../auth.service';
 import { ApiService } from '../api.service';
 import { UserDataService } from '../user-data.service';
@@ -22,7 +22,7 @@ export class TopbarComponent implements OnInit {
     public router: Router,
     public auth: AuthService,
     public api: ApiService,
-    public alert: AlertsService,
+    public events: EventEmitterService,
     public storage: LocalStorageService,
     public centralUserData: UserDataService,
   ) { }
@@ -31,7 +31,11 @@ export class TopbarComponent implements OnInit {
     this.usersName = this.storage.getParsedToken().name;
     this.usersId = this.storage.getParsedToken()._id;
 
-    this.alert.onAlertEvent.subscribe((msg)=> {
+    this.events.updateNumOfFriendRequestEvent.subscribe((msg)=> {
+      this.numberOfFriendRequests--;
+    });
+
+    this.events.onAlertEvent.subscribe((msg)=> {
       this.alertMessage = msg;
     });
 
@@ -57,7 +61,7 @@ export class TopbarComponent implements OnInit {
   public alertMessage: string = '';
   public userData: object = {};
   public numberOfFriendRequests: number ;
-  
+
   public searchForFriends(){
     this.router.navigate(['/search-result', {query: this.query}])
   }

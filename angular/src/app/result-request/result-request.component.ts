@@ -21,6 +21,12 @@ export class ResultRequestComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    if(this.resultRequest.haveSentFriendRequest)
+      { this.haveSentFriendRequest = true; }
+    if(this.resultRequest.haveRecievedFriendRequest)
+      { this.haveRecievedFriendRequest = true; }
+    if(this.resultRequest.isFriend)
+      { this.isFriend = true; }
   }
 
   public accept() {
@@ -40,5 +46,9 @@ export class ResultRequestComponent implements OnInit {
   private updateRequests( ) {
     this.resultRequestChange.emit(this.resultRequest._id);
   }
+
+  public haveSentFriendRequest: boolean = false;
+  public haveRecievedFriendRequest: boolean = false;
+  public isFriend: boolean = false;
 
 }
