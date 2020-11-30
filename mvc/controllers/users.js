@@ -198,7 +198,15 @@ const deleteAllUsers = function (req, res) {
   });
 }
 
+const getAllUsers = function (req, res) {
+  User.find({}, (err, info)=> {
+    if (err) { return res.send({ error: err }); }
+    return res.json({ message: 'get All Users', info: info })
+  });
+}
+
 module.exports = {
+  getAllUsers,
   deleteAllUsers,
   registerUser,
   loginUser,

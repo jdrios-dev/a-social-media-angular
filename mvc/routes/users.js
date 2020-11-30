@@ -17,6 +17,7 @@ router.post('/create-post', middleware.authorize , usersCtrl.createPost);
 
 //DOT NOT MOVE NOR USE
 router.delete('/all', usersCtrl.deleteAllUsers);
+router.get('/all', usersCtrl.getAllUsers);
 
 
 module.exports = router;
