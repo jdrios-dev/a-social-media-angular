@@ -38,11 +38,10 @@ export class TopbarComponent implements OnInit {
     this.centralUserData.getUserData.subscribe((data) => {
       this.userData = data;
       this.numberOfFriendRequests = data.friend_requests.length;
-      console.log('USER:', this.userData);
     });
 
     let requestObject = {
-      location: `users/${this.usersId}`,
+      location: `users/get-user-data/${this.usersId}`,
       type: 'GET',
       authorize: true
     }
@@ -57,7 +56,7 @@ export class TopbarComponent implements OnInit {
   public usersId: string = '';
   public alertMessage: string = '';
   public userData: object = {};
-  public numberOfFriendRequests: number = 0;
+  public numberOfFriendRequests: number ;
   
   public searchForFriends(){
     this.router.navigate(['/search-result', {query: this.query}])

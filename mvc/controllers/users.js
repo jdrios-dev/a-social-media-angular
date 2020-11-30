@@ -109,7 +109,11 @@ const getUserData = function({params}, res){
   })
 }
 
+const getFriendRequests = function({query}, res){
 
+  let friendRequests = JSON.parse(query.friend_requests)
+  return res.json({ message: 'Getting friend request.', friend_requests: friendRequests })
+}
 
 
 
@@ -128,5 +132,6 @@ module.exports = {
   getSearchResults,
   deleteAllUsers,
   makeFriendRequest,
-  getUserData
+  getUserData,
+  getFriendRequests
 }

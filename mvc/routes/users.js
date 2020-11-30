@@ -9,7 +9,8 @@ router.post('/login', usersCtrl.loginUser );
 router.get('/generate-feed',middleware.authorize , usersCtrl.generateFeed );
 router.get('/get-search-results', middleware.authorize , usersCtrl.getSearchResults);
 router.post('/make-friend-request/:from/:to', middleware.authorize, usersCtrl.makeFriendRequest );
-router.get('/:userid', middleware.authorize , usersCtrl.getUserData);
+router.get('/get-friend-requests', middleware.authorize , usersCtrl.getFriendRequests);
+router.get('/get-user-data/:userid', middleware.authorize , usersCtrl.getUserData);
 
 
 //DOT NOT MOVE NOR USE
