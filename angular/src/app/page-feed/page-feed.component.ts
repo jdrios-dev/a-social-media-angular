@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 
 
 import { ApiService } from '../api.service';
+import { EventEmitterService } from '../event-emitter.service';
 import { LocalStorageService } from '../local-storage.service';
 
 @Component({
@@ -16,6 +17,7 @@ export class PageFeedComponent implements OnInit {
     private api: ApiService,
     private title: Title,
     private storage: LocalStorageService,
+    private events: EventEmitterService,
   ) { }
 
   ngOnInit(): void {
@@ -38,6 +40,29 @@ export class PageFeedComponent implements OnInit {
   public changeTheme(newTheme){
     this.newPostTheme = newTheme;
     this.storage.setPostTheme(newTheme);
-    console.log(this.newPostTheme);
+  }
+
+  public createPost(){
+    if(this.newPostContent.length == 0){
+      return this.events.onAlertEvent.emit('No content for your post was provided.')
+    }
+
+
+    console.log('CreatePost!');
+
+    let requestObject = {
+      location: 'users/create-post',
+      type: 'POST',
+      authorize: true,
+      body: {
+        theme: this.newPostTheme,
+        content: this.newPostContent
+      }
+    }
+    this.api.makeRequest(requestObject)
+      .then((val)=> {
+        console.log(val);
+        this.newPostContent = '';
+      });
   }
 }

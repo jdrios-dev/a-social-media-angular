@@ -1,6 +1,7 @@
 const passport = require('passport');
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
+const Post = mongoose.model('Post');
 
 
 
@@ -162,7 +163,33 @@ const resolveFriendRequest = function({query, params}, res){
   });
 }
 
+const createPost = function({body, payload}, res){
+  if(!body.content || !body.theme){
+    return res.statusJson(400, {message: 'Arguments missing (Theme or content).'})
+  }
 
+  let userId = payload._id;
+
+  const post = new Post();
+
+  post.theme = body.theme;
+  post.content = body.content;
+
+  User.findById(userId, (err, user)=> {
+    if (err) { return res.send({ error: err }); }
+
+    user.posts.push(post);
+    user.save((err) => {
+      if (err) { return res.send({ error: err }); }
+      return res.statusJson(201, { message: 'Create post'})
+    })
+  })
+
+
+}
+
+
+//DO NOT MOVE; NOT TOUCH
 
 const deleteAllUsers = function (req, res) {
   User.deleteMany({}, (err, info)=> {
@@ -181,5 +208,6 @@ module.exports = {
   makeFriendRequest,
   getUserData,
   getFriendRequests,
-  resolveFriendRequest
+  resolveFriendRequest,
+  createPost
 }
