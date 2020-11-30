@@ -37,4 +37,27 @@
       Send Message
     </button>
   </div>
+  <!-- //// -->
+  <div
+    *ngIf="use == 'request'"
+    class="ml-auto mr-3 mt-3 align-self-start">
+    <button
+    (click)="accept()"
+      class="btn btn-sm btn-primary rounded-pill">
+      Accept Friend
+    </button>
+    
+    <button
+      class="btn btn-sm btn-primary rounded-pill ml-1"
+      data-toggle="modal"
+      data-target="#staticBackdrop"
+    >
+      Send Message
+    </button>
+    <button
+      (click)="decline()"
+      class="btn btn-sm btn-danger rounded-pill ml-1">
+      Decline
+    </button>
+  </div>
 </div>

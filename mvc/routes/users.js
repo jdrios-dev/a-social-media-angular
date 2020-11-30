@@ -11,6 +11,7 @@ router.get('/get-search-results', middleware.authorize , usersCtrl.getSearchResu
 router.post('/make-friend-request/:from/:to', middleware.authorize, usersCtrl.makeFriendRequest );
 router.get('/get-friend-requests', middleware.authorize , usersCtrl.getFriendRequests);
 router.get('/get-user-data/:userid', middleware.authorize , usersCtrl.getUserData);
+router.post('/resolve-friend-request/:from/:to', middleware.authorize , usersCtrl.resolveFriendRequest);
 
 
 //DOT NOT MOVE NOR USE

@@ -110,9 +110,15 @@ const getUserData = function({params}, res){
 }
 
 const getFriendRequests = function({query}, res){
-
   let friendRequests = JSON.parse(query.friend_requests)
-  return res.json({ message: 'Getting friend request.', friend_requests: friendRequests })
+  User.find({'_id': {$in: friendRequests}}, 'name profile_img', ( err, users ) => {
+    if( err ){ return res.json({ err: err }); }
+    return res.statusJson(200, {message: 'Getting Friend Request', users: users})
+  });
+}
+
+const resolveFriendRequest = function({query, params}, res){
+  res.json({ message:'resolve friend', ...query, ...params })
 }
 
 
@@ -133,5 +139,6 @@ module.exports = {
   deleteAllUsers,
   makeFriendRequest,
   getUserData,
-  getFriendRequests
+  getFriendRequests,
+  resolveFriendRequest
 }
