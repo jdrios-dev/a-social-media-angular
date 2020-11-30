@@ -25,9 +25,9 @@ export class PageSearchesComponent implements OnInit {
     this.title.setTitle('Search Results');
     this.document.getElementById('sidebarToggleTop').classList.add('d-none');
 
-    this.subscription = this.route.params.subscribe( params => {
-      this.query = params.query;
-      this.centralUserData.getUserData.subscribe((data)=> {
+    this.centralUserData.getUserData.subscribe((data)=> {
+      this.subscription = this.route.params.subscribe( params => {
+        this.query = params.query;
         this.user = data;
         this.getResults();
       });
