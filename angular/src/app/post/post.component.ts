@@ -88,7 +88,6 @@ export class PostComponent implements OnInit {
           commenter_name: val.commenter.name,
           commenter_image: val.commenter.profile_image
         }
-        console.log(newComment);
         this.post.comments.push(newComment);
         this.comment='';
       }

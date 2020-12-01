@@ -32,7 +32,6 @@ const addCommentDetails = function(posts){
       }
     }
     Promise.all(promises).then((val) => {
-      console.log(val);
       resolve(posts);
     });
   });

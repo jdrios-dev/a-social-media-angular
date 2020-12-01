@@ -1,0 +1,86 @@
+const makeFriends = function(users) {
+            return new Promise(function(resolve, reject) {
+                
+                // The loopThroughUsers() function will be called recursively, each time with a smaller array size.  (The first value will be chopped from beginning of the array each time.)
+                function loopThroughUsers(users) {
+                    
+                    // This function takes in two users, and adds them to each others friends list.
+                    // It returns a promise that is resolved when both users have been updated and saved.
+                    function addEachOther(user1, user2) {
+                        
+                        // This function saves us from having to write the User.findById... code twice, we write it once and then we can call it for each of the users.
+                        function addFriend(user1, user2) {
+                            return new Promise(function(resolve, reject) {
+                                User.findById(user1, (err, user) => {
+                                    if(err) { return reject("Error"); }
+                                    user.friends.push(user2);
+                                    user.save((err) => {
+                                        if(err) { return reject("Error"); }
+                                        resolve();
+                                    });
+                                });
+                            });
+                        }
+            
+                        return new Promise(function(resolve, reject) {
+                            
+                            // This will add user2 to the user1 friends list
+                            let p1 = addFriend(user1, user2);
+                            
+                            // This will add user1 to the user2 friends list
+                            let p2 = addFriend(user2, user1);
+            
+                            Promise.all([p1, p2]).then((val) => {
+                                resolve("Both friends have added each other.");
+                            });
+                        });
+                    }
+            
+                    // The loopThroughUsers() function will return a promise. It will only be resolved when all recursive calls have resolved. (This goes all the way down until the array size is 0, at which point the resolutions will propagate upwards until reaching this original call.)
+                    return new Promise(function(resolve, reject) {
+                        
+                        // When the array size is 0, you want to immediately resolve() the promise.
+                        if(users.length == 0) { return resolve(); }
+                        
+                        
+                        // Call loopThroughUsers() on a the current users array with the first value removed from the array.  Then store that promise in a variable.
+                        
+                            // You might ask why remove the first value from the array for the next call of the function?
+                        
+                            // We will be looping through the users list and adding friends in that list.
+                            // For the first iteration, we will be checking to add friends to the first user.
+                        
+                            // So we might make the user[0] and user[1] friends.
+                            // Or user[0] and user[53] friends, etc.
+                        
+                            // By the end of the array, many users will have the first user in the array as a friend.  So we don't need to worry about the first user, user[0], anymore.
+                        
+                            // In short, we remove the first user from the array so to make it impossible to have duplicates in any friend arrays.
+                        
+                        let recursionPromise = loopThroughUsers(users.slice(1));
+                        
+                        // Remember that the function that adds the friends together returns a promise, and we'll be adding many friends.  We'll store those promises in an array to be used in a Promise.all().
+                        let friendRequestPromises = [];
+                        for(let i = 1; i < users.length; i++) {
+                            
+                            // There is a 50% chance of a user adding a user as a friend.
+                            if(getRandom(0, 100) > 50) {
+                                friendRequest = addEachOther(users[0]._id, users[i]._id);
+                                friendRequestPromises.push(friendRequest);
+                            }
+                        }
+            
+                        // Finally, resolve the loopThroughUsers() function when all of it's friendRequests have been resolved, and the recursionPromise has been resolved.
+                        Promise.all([...friendRequestPromises, recursionPromise]).then((val) => {
+                            resolve(val);
+                        });
+                    });
+                }
+            
+                // When the original loopThroughUsers() call is resolved, you can resolve the makeFriends promise.
+                loopThroughUsers(users).then(() => {
+                    console.log("Done looping through users.");
+                    resolve("Resolve makeFriends() Promise");
+                });
+            });
+        }
