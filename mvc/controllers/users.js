@@ -2,6 +2,7 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const Post = mongoose.model('Post');
+const Comment = mongoose.model('Comment');
 const timeAgo = require("time-ago");
 
 
@@ -13,6 +14,33 @@ const containsDuplicate = function(array){
     }
   }
 }
+
+const addCommentDetails = function(posts){
+  return new Promise(function(resolve, reject){
+    let promises = [];
+
+    for(let post of posts){
+      for (let comment of post.comments){
+        let promise = new Promise(function(resolve, reject){
+          User.findById(comment.commenter_id, "name profile_image", (err, user)=> {
+            comment.commenter_name = user.name;
+            comment.commenter_profile_image = user.profile_image;
+            resolve(comment);
+          });
+        });
+        promises.push(promise)
+      }
+    }
+    Promise.all(promises).then((val) => {
+      console.log(val);
+      resolve(posts);
+    });
+  });
+}
+
+
+
+
 
 const registerUser = function({body}, res) {
 
@@ -106,8 +134,10 @@ let myFriendsPosts = myPosts.then((friendsArray)=> {
 myFriendsPosts.then(() => {
 
   posts.sort((a, b) => (a.date > b.date) ? -1 : 1);
-  let slicePosts = posts.slice(0, maxAmountOfPosts)
-  res.statusJson(201, { posts: slicePosts })
+  let slicePosts = posts.slice(0, maxAmountOfPosts);
+  addCommentDetails(slicePosts).then((slicePosts)=>{
+    res.statusJson(201, { posts: slicePosts })
+  })
 });
 }
 
@@ -222,7 +252,7 @@ const createPost = function({body, payload}, res){
 
     let newPost = post.toObject();
     newPost.name = payload.name;
-
+    newPost.ownerid = payload._id;
     user.posts.push(post);
     user.save((err) => {
       if (err) { return res.send({ error: err }); }
@@ -252,6 +282,40 @@ const likeUnlike = function({ payload, params }, res){
     })
   })
 }
+
+const postCommentOnPost = function({body, payload, params}, res){
+  User.findById(params.ownerid, (err, user) => {
+    if(err) { return res.json({ err: err }); }
+    const post = user.posts.id(params.postid);
+
+    let comment = new Comment();
+
+    comment.commenter_id = payload._id;
+    comment.comment_content = body.content;
+    post.comments.push(comment);
+
+    user.save((err, user)=> {
+
+      if(err) { return res.json({ err: err }); }
+
+      User.findById(payload._id, "name profile_image" , (err, user)=> {
+        if(err) { return res.json({ err: err }); }
+
+        return res.statusJson(201, {
+          message: "Posted Comment",
+          comment: comment,
+          commenter: user
+        });
+      });
+    });
+  });
+}
+
+
+
+
+
+
 
 
 //DO NOT MOVE; NOT TOUCH
@@ -283,5 +347,6 @@ module.exports = {
   getFriendRequests,
   resolveFriendRequest,
   createPost,
-  likeUnlike
+  likeUnlike,
+  postCommentOnPost
 }

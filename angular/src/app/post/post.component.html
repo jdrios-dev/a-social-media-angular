@@ -1,7 +1,13 @@
 <div class="card mt-4 shadow">
   <div class="card-header">
-    <a href="#"><img class="profile-img-sm rounded-circle" src="/assets/images/f1.jpg"></a>
-    <span class="ml-3 h5" ><a [ngClass]="'text-' + post.theme" class="link font-weight-700" href="#">{{ post.name }}</a></span>
+    <a href="#">
+      <img
+        class="profile-img-sm rounded-circle"
+        src="/assets/images/f1.jpg">
+    </a>
+    <span class="ml-3 h5" >
+      <a [ngClass]="'text-' + post.theme" class="link font-weight-700" href="#">{{ post.name }}</a>
+    </span>
   </div>
   <div class="card-body">
     <p [ngStyle]="{ 'font-size': fontSize + 'px', 'text-align': align }" class="card-text post-body h5">{{ post.content }}</p>
@@ -24,43 +30,35 @@
     </a>
     <div class="collapse" id="{{ fakeId }}">
       <div class="card-body">
-        <form class="mb-2" action="" method="post">
+        <form (submit)="postComponent();" class="mb-2" action="" method="post">
           <div class="form-group">
-            <input type="text" class="rounded-pill form-control" placeholder="Leave a comment.">
+            <input [(ngModel)]="comment" name="comment" type="text" class="rounded-pill form-control" placeholder="Leave a comment.">
           </div>
         </form>
 
         <div class="comment-list">
-
           <div
             *ngIf="post && !post.comments.length"
-            class="text-center mt-2"
-          >
+            class="text-center mt-2">
             Be the fist to comment on this post!
           </div>
-
-
-
-
-          <!-- <div class="comment p-3 my-2 rounded">
+          <div *ngFor="let comment of post.comments" class="comment p-3 my-2 rounded">
             <div class="comment-user">
-              <a href="#"><img src="/assets/images/f1.jpg" class="rounded-circle profile-img-sm"></a>
-              <span class="ml-2"><a href="#" class="link">Sarah Parker</a></span>
+              <a href="#">
+                <img
+                class="rounded-circle profile-img-sm"
+                src="/assets/images/{{ comment.commenter_profile_image }}.jpg "alt="Person" >
+              </a>
+              <span class="ml-2">
+                <a href="#" class="link">
+                  {{comment.commenter_name}}
+                </a>
+              </span>
             </div>
             <div class="comment-body pl-3 mt-2">
-              Hey, that's pretty cool!
+              {{ comment.comment_content }}
             </div>
           </div>
-          <div class="comment p-3 my-2 rounded">
-            <div class="comment-user">
-              <a href="#"><img src="/assets/images/f1.jpg" class="rounded-circle profile-img-sm"></a>
-              <span class="ml-2"><a href="#" class="link">Sarah Parker</a></span>
-            </div>
-            <div class="comment-body pl-3 mt-2">
-              Sales lean startup agile development vesting period advisor business-to-business. Focus
-              stealth partner network crowdfunding
-            </div>
-          </div> -->
         </div>
       </div>
     </div>

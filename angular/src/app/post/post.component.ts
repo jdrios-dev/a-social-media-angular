@@ -49,6 +49,7 @@ export class PostComponent implements OnInit {
   public align: string = 'center';
   public liked: boolean = false;
   public userId: string = '';
+  public comment: string = '';
 
   public likeButtonClicked(postid) {
 
@@ -65,6 +66,31 @@ export class PostComponent implements OnInit {
       } else {
         this.post.likes.push(this.userId)
         this.liked = true;
+      }
+    });
+  }
+
+  public postComponent(){
+    if(this.comment.length == 0){ return; }
+    console.log('POST COMMENT', this.comment);
+
+    let requestObject = {
+      location: `users/post-comment/${this.post.ownerid}/${this.post._id}`,
+      type: 'POST',
+      authorize: true,
+      body: { content: this.comment }
+    }
+
+    this.api.makeRequest(requestObject).then((val)=> {
+      if(val.statusCode == 201){
+        let newComment = {
+          ...val.comment,
+          commenter_name: val.commenter.name,
+          commenter_image: val.commenter.profile_image
+        }
+        console.log(newComment);
+        this.post.comments.push(newComment);
+        this.comment='';
       }
     });
   }
