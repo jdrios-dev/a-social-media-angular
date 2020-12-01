@@ -13,6 +13,7 @@ router.get('/get-friend-requests', middleware.authorize , usersCtrl.getFriendReq
 router.get('/get-user-data/:userid', middleware.authorize , usersCtrl.getUserData);
 router.post('/resolve-friend-request/:from/:to', middleware.authorize , usersCtrl.resolveFriendRequest);
 router.post('/create-post', middleware.authorize , usersCtrl.createPost);
+router.post('/like-unlike/:ownerid/:postid', middleware.authorize , usersCtrl.likeUnlike);
 
 
 //DOT NOT MOVE NOR USE

@@ -73,17 +73,18 @@ console.log(payload._id);
 const posts = [];
 const maxAmountOfPosts = 30;
 
-function addNameAndAgoToPosts(array, name) {
+function addToPosts(array, name, ownerid) {
   for( item of array) {
     item.name = name;
     item.ago = timeAgo.ago(item.date);
+    item.ownerid = ownerid;
   }
 }
 
 let myPosts = new Promise(function(resolve, reject){
   User.findById(payload._id, 'name posts friends', {lean: true}  , (err, user)=> {
     if(err) { return res.json({ err: err }); }
-    addNameAndAgoToPosts(user.posts, user.name);
+    addToPosts(user.posts, user.name, user._id);
     posts.push(...user.posts);
     resolve(user.friends)
   });
@@ -94,7 +95,7 @@ let myFriendsPosts = myPosts.then((friendsArray)=> {
     User.find({'_id': { $in: friendsArray }}, 'name posts', { lean: true }, (err, users)=> {
       if(err) { return res.json({ err: err }); }
       for(user of users) {
-        addNameAndAgoToPosts(user.posts, user.name);
+        addToPosts(user.posts, user.name, user._id);
         posts.push(...user.posts);
       }
       resolve();
@@ -232,6 +233,26 @@ const createPost = function({body, payload}, res){
 
 }
 
+const likeUnlike = function({ payload, params }, res){
+
+  User.findById(params.ownerid, (err, user) => {
+    if(err) { return res.json({ err: err }); }
+
+    const post = user.posts.id(params.postid);
+
+    if(post.likes.includes(payload._id)){
+      post.likes.splice(post.likes.indexOf(payload._id), 1);
+    } else {
+      post.likes.push(payload._id)
+    }
+
+    user.save((err, user)=>{
+      if(err) { return res.json({ err: err }); }
+      res.statusJson(201, { message: 'Like Or Unlike a post...' })
+    })
+  })
+}
+
 
 //DO NOT MOVE; NOT TOUCH
 
@@ -261,5 +282,6 @@ module.exports = {
   getUserData,
   getFriendRequests,
   resolveFriendRequest,
-  createPost
+  createPost,
+  likeUnlike
 }

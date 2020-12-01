@@ -7,7 +7,7 @@
 .card:hover { transform: scale(1.05); }
 
 .like-icon { cursor: pointer }
-.like { transform: scale(1.8) translateX(-3px); }
+.liked { transform: scale(1.8) translateX(-3px); }
 
 .comment { background-color: #f5f5f5 !important; }
 .comment-body { color: #585858 }

@@ -30,7 +30,6 @@ export class PageFeedComponent implements OnInit {
     }
 
     this.api.makeRequest(requestObject).then((val)=> {
-      console.log(val);
 
       if(val.statusCode == 201) {
         this.posts.col1 = val.posts.filter((val, i)=> i % 4 === 0);
