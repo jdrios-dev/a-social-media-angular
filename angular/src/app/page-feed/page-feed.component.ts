@@ -31,22 +31,21 @@ export class PageFeedComponent implements OnInit {
 
     this.api.makeRequest(requestObject).then((val)=> {
       console.log(val);
-      this.posts.col1 = val.posts.filter((val, i)=> i % 4 === 0);
-      this.posts.col2 = val.posts.filter((val, i)=> i % 4 === 1);
-      this.posts.col3 = val.posts.filter((val, i)=> i % 4 === 2);
-      this.posts.col4 = val.posts.filter((val, i)=> i % 4 === 3);
-      console.log('POSTS OBJECT');
-      console.log(this.posts);
-      
-      
+
+      if(val.statusCode == 201) {
+        this.posts.col1 = val.posts.filter((val, i)=> i % 4 === 0);
+        this.posts.col2 = val.posts.filter((val, i)=> i % 4 === 1);
+        this.posts.col3 = val.posts.filter((val, i)=> i % 4 === 2);
+        this.posts.col4 = val.posts.filter((val, i)=> i % 4 === 3);
+      }
     })
   }
 
   public posts = {
-    col1: [''],
-    col2: [''],
-    col3: [''],
-    col4: [''],
+    col1: [],
+    col2: [],
+    col3: [],
+    col4: [],
   }
 
   public newPostContent: string = '';
@@ -73,6 +72,12 @@ export class PageFeedComponent implements OnInit {
     }
     this.api.makeRequest(requestObject)
       .then((val)=> {
+        if(val.statusCode == 201) {
+          val.newPost.ago = "Now";
+          this.posts.col1.unshift(val.newPost)
+        } else {
+          this.events.onAlertEvent.emit('something went wrong, your post could not be created.');
+        }
         this.newPostContent = '';
       });
   }

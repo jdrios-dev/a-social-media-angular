@@ -2,7 +2,7 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const Post = mongoose.model('Post');
-
+const timeAgo = require("time-ago");
 
 
 const containsDuplicate = function(array){
@@ -73,16 +73,17 @@ console.log(payload._id);
 const posts = [];
 const maxAmountOfPosts = 30;
 
-function addNameToPosts(array, name) {
+function addNameAndAgoToPosts(array, name) {
   for( item of array) {
-    item.name = name
+    item.name = name;
+    item.ago = timeAgo.ago(item.date);
   }
 }
 
 let myPosts = new Promise(function(resolve, reject){
   User.findById(payload._id, 'name posts friends', {lean: true}  , (err, user)=> {
     if(err) { return res.json({ err: err }); }
-    addNameToPosts(user.posts, user.name);
+    addNameAndAgoToPosts(user.posts, user.name);
     posts.push(...user.posts);
     resolve(user.friends)
   });
@@ -93,7 +94,7 @@ let myFriendsPosts = myPosts.then((friendsArray)=> {
     User.find({'_id': { $in: friendsArray }}, 'name posts', { lean: true }, (err, users)=> {
       if(err) { return res.json({ err: err }); }
       for(user of users) {
-        addNameToPosts(user.posts, user.name);
+        addNameAndAgoToPosts(user.posts, user.name);
         posts.push(...user.posts);
       }
       resolve();
@@ -105,7 +106,7 @@ myFriendsPosts.then(() => {
 
   posts.sort((a, b) => (a.date > b.date) ? -1 : 1);
   let slicePosts = posts.slice(0, maxAmountOfPosts)
-  res.status(200).json({ posts: slicePosts })
+  res.statusJson(201, { posts: slicePosts })
 });
 }
 
@@ -218,10 +219,13 @@ const createPost = function({body, payload}, res){
   User.findById(userId, (err, user)=> {
     if (err) { return res.send({ error: err }); }
 
+    let newPost = post.toObject();
+    newPost.name = payload.name;
+
     user.posts.push(post);
     user.save((err) => {
       if (err) { return res.send({ error: err }); }
-      return res.statusJson(201, { message: 'Create post'})
+      return res.statusJson(201, { message: 'Create post', newPost: newPost})
     })
   })
 
