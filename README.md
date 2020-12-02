@@ -1,4 +1,4 @@
-# A Social Media ( Res Social )
+# A Social Media ( Red Social )
 
 A red social app, without fake users, really.
 
