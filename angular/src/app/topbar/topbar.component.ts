@@ -42,6 +42,7 @@ export class TopbarComponent implements OnInit {
     this.centralUserData.getUserData.subscribe((data) => {
       this.userData = data;
       this.numberOfFriendRequests = data.friend_requests.length;
+      this.profilePicture = data.profile_image;
     });
 
     let requestObject = {
@@ -61,6 +62,7 @@ export class TopbarComponent implements OnInit {
   public alertMessage: string = '';
   public userData: object = {};
   public numberOfFriendRequests: number ;
+  public profilePicture: string = 'default-avatar';
 
   public searchForFriends(){
     this.router.navigate(['/search-result', {query: this.query}])

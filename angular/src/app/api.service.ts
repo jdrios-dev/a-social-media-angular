@@ -31,7 +31,7 @@ export class ApiService {
 
     let httpOptions = {};
 
-    if(requestObject.authorize){
+    if(this.storage.getToken()){
       httpOptions = {
         headers: new HttpHeaders({
           'Authorization': `Bearer ${this.storage.getToken()}`
@@ -60,8 +60,7 @@ export class ApiService {
 
     let requestObject = {
       location: `users/make-friend-request/${from}/${to}`,
-      type: 'POST',
-      authorize: true
+      type: 'POST'
     }
     this.makeRequest(requestObject).then((val)=> {
       console.log(val);

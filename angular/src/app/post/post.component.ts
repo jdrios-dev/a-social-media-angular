@@ -72,12 +72,10 @@ export class PostComponent implements OnInit {
 
   public postComponent(){
     if(this.comment.length == 0){ return; }
-    console.log('POST COMMENT', this.comment);
 
     let requestObject = {
       location: `users/post-comment/${this.post.ownerid}/${this.post._id}`,
       type: 'POST',
-      authorize: true,
       body: { content: this.comment }
     }
 
@@ -86,7 +84,7 @@ export class PostComponent implements OnInit {
         let newComment = {
           ...val.comment,
           commenter_name: val.commenter.name,
-          commenter_image: val.commenter.profile_image
+          commenter_profile_image: val.commenter.profile_image
         }
         this.post.comments.push(newComment);
         this.comment='';

@@ -28,7 +28,7 @@ export class PageFriendRequestComponent implements OnInit {
       let requestObject = {
         location: `users/get-friend-requests?friend_requests=${array}`,
         type: 'GET',
-        authorize: true
+        
       }
       this.api.makeRequest(requestObject).then((val)=> {
         if (val.statusCode === 200) {

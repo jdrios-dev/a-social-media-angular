@@ -3,7 +3,7 @@
     <a href="#">
       <img
         class="profile-img-sm rounded-circle"
-        src="/assets/images/f1.jpg">
+        src="/assets/images/{{post.ownerProfileImage}}.jpg">
     </a>
     <span class="ml-3 h5" >
       <a [ngClass]="'text-' + post.theme" class="link font-weight-700" href="#">{{ post.name }}</a>
@@ -47,7 +47,7 @@
               <a href="#">
                 <img
                 class="rounded-circle profile-img-sm"
-                src="/assets/images/f1.jpg "alt="Person" >
+                src="/assets/images/{{comment.commenter_profile_image}}.jpg "alt="Person" >
               </a>
               <span class="ml-2">
                 <a href="#" class="link">

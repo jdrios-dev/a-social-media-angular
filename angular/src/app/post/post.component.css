@@ -1,9 +1,19 @@
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+
 .card-text {
   line-height: 170%;
   color: #545454;
 }
 
-.card { transition: transform .4s; }
+.card {
+  transition: transform .4s;
+  animation-name: fade-in;
+  animation-duration: .6s;
+}
 .card:hover { transform: scale(1.05); }
 
 .like-icon { cursor: pointer }

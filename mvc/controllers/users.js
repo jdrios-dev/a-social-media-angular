@@ -100,49 +100,49 @@ console.log(payload._id);
 const posts = [];
 const maxAmountOfPosts = 30;
 
-function addToPosts(array, name, ownerid) {
-  for( item of array) {
-    item.name = name;
-    item.ago = timeAgo.ago(item.date);
-    item.ownerid = ownerid;
+  function addToPosts(array, user) {
+    for( item of array) {
+      item.name = user.name;
+      item.ago = timeAgo.ago(item.date);
+      item.ownerid = user._id;
+      item.ownerProfileImage = user.profile_image;
+    }
   }
-}
 
-let myPosts = new Promise(function(resolve, reject){
-  User.findById(payload._id, 'name posts friends', {lean: true}  , (err, user)=> {
-    if(err) { return res.json({ err: err }); }
-    addToPosts(user.posts, user.name, user._id);
-    posts.push(...user.posts);
-    resolve(user.friends)
-  });
-});
-
-let myFriendsPosts = myPosts.then((friendsArray)=> {
-  return new Promise(function(resolve, reject) {
-    User.find({'_id': { $in: friendsArray }}, 'name posts', { lean: true }, (err, users)=> {
+  let myPosts = new Promise(function(resolve, reject){
+    User.findById(payload._id, 'name posts profile_image friends', {lean: true}  , (err, user)=> {
       if(err) { return res.json({ err: err }); }
-      for(user of users) {
-        addToPosts(user.posts, user.name, user._id);
-        posts.push(...user.posts);
-      }
-      resolve();
+      addToPosts(user.posts, user);
+      posts.push(...user.posts);
+      resolve(user.friends)
     });
   });
-});
 
-myFriendsPosts.then(() => {
+  let myFriendsPosts = myPosts.then((friendsArray)=> {
+    return new Promise(function(resolve, reject) {
+      User.find({'_id': { $in: friendsArray }}, 'name profile_image posts', { lean: true }, (err, users)=> {
+        if(err) { return res.json({ err: err }); }
+        for(user of users) {
+          addToPosts(user.posts, user);
+          posts.push(...user.posts);
+        }
+        resolve();
+      });
+    });
+  });
 
-  posts.sort((a, b) => (a.date > b.date) ? -1 : 1);
-  let slicePosts = posts.slice(0, maxAmountOfPosts);
-  addCommentDetails(slicePosts).then((slicePosts)=>{
-    res.statusJson(201, { posts: slicePosts })
-  })
-});
+  myFriendsPosts.then(() => {
+    posts.sort((a, b) => (a.date > b.date) ? -1 : 1);
+    let slicePosts = posts.slice(0, maxAmountOfPosts);
+    addCommentDetails(slicePosts).then((slicePosts)=>{
+      res.statusJson(201, { posts: slicePosts })
+    })
+  });
 }
 
 const getSearchResults = function ({query, payload}, res) {
   if(!query.query) { return res.json( {err: "Missing Query"} ); }
-  User.find({ name: { $regex: query.query, $options: 'i' } }, 'name friends friend_requests', (err, results) => {
+  User.find({ name: { $regex: query.query, $options: 'i' } }, 'name profile_image friends friend_requests', (err, results) => {
     if (err) { return res.json({ err: err }); }
     results = results.slice(0, 20);
 
@@ -183,7 +183,7 @@ const getUserData = function({params}, res){
 
 const getFriendRequests = function({query}, res){
   let friendRequests = JSON.parse(query.friend_requests)
-  User.find({'_id': {$in: friendRequests}}, 'name profile_img', ( err, users ) => {
+  User.find({'_id': {$in: friendRequests}}, 'name profile_image', ( err, users ) => {
     if( err ){ return res.json({ err: err }); }
     return res.statusJson(200, {message: 'Getting Friend Request', users: users})
   });
@@ -252,6 +252,7 @@ const createPost = function({body, payload}, res){
     let newPost = post.toObject();
     newPost.name = payload.name;
     newPost.ownerid = payload._id;
+    newPost.ownerProfileImage = user.profile_image;
     user.posts.push(post);
     user.save((err) => {
       if (err) { return res.send({ error: err }); }
