@@ -60,7 +60,9 @@ export class TopbarComponent implements OnInit {
   public usersName: string;
   public usersId: string = '';
   public alertMessage: string = '';
-  public userData: object = {};
+  public userData: object;
+  
+  
   public numberOfFriendRequests: number ;
   public profilePicture: string = 'default-avatar';
 

@@ -1,12 +1,12 @@
 <div class="card mt-4 shadow">
   <div class="card-header">
-    <a href="#">
+    <a routerLink="/profile/{{ post.ownerid }}">
       <img
         class="profile-img-sm rounded-circle"
         src="/assets/images/{{post.ownerProfileImage}}.jpg">
     </a>
     <span class="ml-3 h5" >
-      <a [ngClass]="'text-' + post.theme" class="link font-weight-700" href="#">{{ post.name }}</a>
+      <a routerLink="/profile/{{ post.ownerid }}" [ngClass]="'text-' + post.theme" class="link font-weight-700" href="#">{{ post.name }}</a>
     </span>
   </div>
   <div class="card-body">
@@ -44,13 +44,13 @@
           </div>
           <div *ngFor="let comment of post.comments" class="comment p-3 my-2 rounded">
             <div class="comment-user">
-              <a href="#">
+              <a routerLink="/profile/{{comment.commenter_id}}">
                 <img
                 class="rounded-circle profile-img-sm"
                 src="/assets/images/{{comment.commenter_profile_image}}.jpg "alt="Person" >
               </a>
               <span class="ml-2">
-                <a href="#" class="link">
+                <a routerLink="/profile/{{comment.commenter_id}}" class="link">
                   {{comment.commenter_name}}
                 </a>
               </span>

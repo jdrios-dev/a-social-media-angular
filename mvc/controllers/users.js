@@ -37,9 +37,18 @@ const addCommentDetails = function(posts){
   });
 }
 
+const getRandom = function(min, max) {
+  return Math.floor(Math.random()*(max-min))+min;
+}
 
-
-
+const addToPosts = function(array, user) {
+  for( item of array) {
+    item.name = user.name;
+    item.ago = timeAgo.ago(item.date);
+    item.ownerid = user._id;
+    item.ownerProfileImage = user.profile_image;
+  }
+}
 
 const registerUser = function({body}, res) {
 
@@ -95,19 +104,8 @@ const loginUser = function(req, res){
 
 const generateFeed = function({payload}, res) {
 
-console.log(payload._id);
-
 const posts = [];
 const maxAmountOfPosts = 30;
-
-  function addToPosts(array, user) {
-    for( item of array) {
-      item.name = user.name;
-      item.ago = timeAgo.ago(item.date);
-      item.ownerid = user._id;
-      item.ownerProfileImage = user.profile_image;
-    }
-  }
 
   let myPosts = new Promise(function(resolve, reject){
     User.findById(payload._id, 'name posts profile_image friends', {lean: true}  , (err, user)=> {
@@ -174,10 +172,40 @@ const makeFriendRequest = function({params}, res) {
 }
 
 const getUserData = function({params}, res){
-  User.findById(params.userid, (err, user) => {
+  User.findById(params.userid, '-salt -password', {lean: true}, (err, user) => {
     if( err ){ return res.json({ err: err }); }
 
-    res.statusJson(200, {user: user})
+    function getRandomFriends(friendList){
+      let copyOfFriendsList = Array.from(friendList);
+      let randomIds = [];
+
+      for(let i = 0; i < 6; i++){
+        if(friendList <= 6) { randomIds = copyOfFriendsList; break; }
+
+        let randomId = getRandom(0, copyOfFriendsList.length);
+        randomIds.push(copyOfFriendsList[randomId]);
+        copyOfFriendsList.splice(randomId, 1)
+      }
+      return new Promise(function(resolve, reject) {
+        User.find({ '_id': {$in: randomIds}}, 'name profile_image', (err, friends) => {
+          if( err ){ return res.json({ err: err }); }
+          resolve(friends)
+        })
+      });
+    }
+
+    user.posts.sort((a, b) => (a.date > b.date) ? -1 : 1);
+
+    addToPosts(user.posts, user);
+
+    let randomFriends = getRandomFriends(user.friends);
+    let commentDetails = addCommentDetails(user.posts);
+
+    Promise.all([randomFriends, commentDetails]).then((val) => {
+      user.random_friends = val[0]
+      res.statusJson(200, {user: user})
+    });
+
   })
 }
 
