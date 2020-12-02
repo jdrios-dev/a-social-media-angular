@@ -43,7 +43,7 @@ export class PageSearchesComponent implements OnInit {
     let requestObject = {
       location: `users/get-search-results?query=${this.query}`,
       type: 'GET',
-      
+      authorize: true
     }
     this.api.makeRequest(requestObject).then((val)=>{
       this.results = val.results;
