@@ -611,7 +611,6 @@ const makeFriends = function (users) {
 
     // When the original loopThroughUsers() call is resolved, you can resolve the makeFriends promise.
     loopThroughUsers(users).then(() => {
-      console.log("Done looping through users.");
       resolve("Resolve makeFriends() Promise");
     });
   });
@@ -658,7 +657,6 @@ const createFakeUsers = function (req, res) {
   deleteUsers.then((val) => {
     create70Users().then((val) => {
       makeFriends(val).then((val) => {
-        console.log("Done making friends, sending back response");
         res.statusJson(201, { message: "Created Fake Users" });
       });
     });

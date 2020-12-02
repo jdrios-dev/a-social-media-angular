@@ -29,7 +29,37 @@
                   skydiving once.</p>
 
                 <div class="my-4">
-                  <button *ngIf="canAddUser" class="btn btn-light text-primary rounded-pill m-1">Add Friend</button>
+                  <div *ngIf="haveReceivedFriendRequest" class="my-4">
+                    <hr class="w-25 my-4 bg-white">
+                    <h6 class="text-white">
+                      this user has sent you a friend request.
+                    </h6>
+                    <button
+                    (click)="accept();"
+                    class="btn btn-sm btn-success rounded-pill ml-1"
+                    >
+                      Accept
+                    </button>
+                      <button
+                      (click)="decline();"
+                      class="btn btn-sm btn-danger rounded-pill ml-1"
+                    >
+                      Declaine
+                    </button>
+                    <hr class="w-25 my-4 bg-white">
+                  </div>
+
+                  <div *ngIf="haveSentFriendRequest" class="btn btn-sm btn-warning rounded-pill ml-1">
+                    Friend request pending
+                  </div>
+
+                  <button
+                    (click)="makeFriendRequest()"
+                    *ngIf="canAddUser && !haveSentFriendRequest && !haveReceivedFriendRequest"
+                    class="btn btn-light text-primary rounded-pill m-1">
+                    Add Friend
+                  </button>
+
                   <button *ngIf="canSendMessage" class="btn btn-info rounded-pill m-1">Send Message</button>
                 </div>
 
@@ -66,8 +96,12 @@
 
             <a
               (click)="showMorePosts();"
-              *ngIf="posts.length && showPosts < posts.length"
+              *ngIf="posts.length && showPosts < posts.length && showPosts"
               class="bg-success d-block mt-4 py-3 text-center rounded-pill text-white link h5">Load More</a>
+
+            <h3
+              *ngIf="!showPosts"
+              class="text-center mt-5">Add this user as a friend to see their latest posts.</h3>
 
             <div
             *ngIf="posts.length && showPosts >= posts.length"

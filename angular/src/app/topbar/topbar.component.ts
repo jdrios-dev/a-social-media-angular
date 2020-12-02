@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AutoUnsubscribe } from '../unsubscribe';
+
 
 //SERVICES
 import { LocalStorageService } from '../local-storage.service';
@@ -16,6 +18,8 @@ import { UserDataService } from '../user-data.service';
   styleUrls: ['./topbar.component.css']
 })
 
+@AutoUnsubscribe
+
 export class TopbarComponent implements OnInit {
 
   constructor(
@@ -31,15 +35,15 @@ export class TopbarComponent implements OnInit {
     this.usersName = this.storage.getParsedToken().name;
     this.usersId = this.storage.getParsedToken()._id;
 
-    this.events.updateNumOfFriendRequestEvent.subscribe((msg)=> {
+    let friendRequestEvent =this.events.updateNumOfFriendRequestEvent.subscribe((msg)=> {
       this.numberOfFriendRequests--;
     });
 
-    this.events.onAlertEvent.subscribe((msg)=> {
+    let alertEvent = this.events.onAlertEvent.subscribe((msg)=> {
       this.alertMessage = msg;
     });
 
-    this.centralUserData.getUserData.subscribe((data) => {
+    let userDataEvent = this.centralUserData.getUserData.subscribe((data) => {
       this.userData = data;
       this.numberOfFriendRequests = data.friend_requests.length;
       this.profilePicture = data.profile_image;
@@ -52,7 +56,13 @@ export class TopbarComponent implements OnInit {
     }
     this.api.makeRequest(requestObject).then((val)=> {
       this.centralUserData.getUserData.emit(val.user)
-    })
+    });
+
+    this.subscriptions.push(
+      friendRequestEvent,
+      alertEvent,
+      userDataEvent
+    )
 
   }
 
@@ -61,10 +71,10 @@ export class TopbarComponent implements OnInit {
   public usersId: string = '';
   public alertMessage: string = '';
   public userData: object;
-  
-  
   public numberOfFriendRequests: number ;
   public profilePicture: string = 'default-avatar';
+
+  private subscriptions = [];
 
   public searchForFriends(){
     this.router.navigate(['/search-result', {query: this.query}])
