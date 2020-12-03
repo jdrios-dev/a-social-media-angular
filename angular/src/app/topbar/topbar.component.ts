@@ -54,6 +54,10 @@ export class TopbarComponent implements OnInit {
       this.sendMessageObject.name = d.name;
     })
 
+    let resetMessageEvent = this.events.resetMessageNotificationsEvent.subscribe(()=> {
+      this.notifications.messages = 0;
+    });
+
     let requestObject = {
       location: `users/get-user-data/${this.usersId}`,
       type: 'GET',
@@ -67,7 +71,8 @@ export class TopbarComponent implements OnInit {
       friendRequestEvent,
       alertEvent,
       userDataEvent,
-      updateMessageEvent
+      updateMessageEvent,
+      resetMessageEvent
     )
 
   }
@@ -99,4 +104,8 @@ export class TopbarComponent implements OnInit {
     this.api.sendMessage(this.sendMessageObject);
     this.sendMessageObject.content='';
   };
+
+  public resetMessageNotifications(){
+    this.api.resetMessageNotifications();
+  }
 }

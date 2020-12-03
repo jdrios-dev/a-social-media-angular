@@ -354,7 +354,7 @@ const sendMessage = function({body, payload, params}, res){
   })
 
   let toPromise = new Promise(function(resolve, reject){
-    User.findById(to, 'messages', (err, user) => {
+    User.findById(to, 'messages new_message_notifications', (err, user) => {
       if(err) { return res.json({ err: err }); }
       to = user;
       resolve(user);
@@ -371,8 +371,13 @@ const sendMessage = function({body, payload, params}, res){
       }
     }
 
-    function sendMessageTo(to, from){
+    function sendMessageTo(to, from, notify = false){
       return new Promise(function(resolve, reject){
+
+        if(notify && !to.new_message_notifications.includes(from._id)){
+          to.new_message_notifications.push(from._id)
+        }
+
         if(foundMessage = hasMessageFrom(to.messages, from._id)){
           foundMessage.content.push(message);
           to.save((err, user)=> {
@@ -398,7 +403,7 @@ const sendMessage = function({body, payload, params}, res){
       message: body.content
     }
 
-    let sendMessageToRecipient = sendMessageTo(to, from);
+    let sendMessageToRecipient = sendMessageTo(to, from, true);
     let sendMessageToAuthor = sendMessageTo(from, to)
 
     return new Promise(function(resolve, reject){
@@ -412,7 +417,17 @@ const sendMessage = function({body, payload, params}, res){
   })
 }
 
+const resetMessageNotifications = function({payload}, res){
+  User.findById(payload._id, (err, user) => {
+    if (err) { return res.send({ error: err }); }
 
+    user.new_message_notifications = [];
+    user.save((err) => {
+      if (err) { return res.send({ error: err }); }
+      return res.statusJson(201, { message: 'Reset Message Notifications' })
+    })
+  })
+}
 
 
 
@@ -448,5 +463,6 @@ module.exports = {
   createPost,
   likeUnlike,
   postCommentOnPost,
-  sendMessage
+  sendMessage,
+  resetMessageNotifications
 }

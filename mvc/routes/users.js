@@ -17,6 +17,7 @@ router.post('/create-post', middleware.authorize , usersCtrl.createPost);
 router.post('/like-unlike/:ownerid/:postid', middleware.authorize , usersCtrl.likeUnlike);
 router.post('/post-comment/:ownerid/:postid', middleware.authorize , usersCtrl.postCommentOnPost);
 router.post('/send-message/:to', middleware.authorize , usersCtrl.sendMessage);
+router.post('/reset-message-notification', middleware.authorize , usersCtrl.resetMessageNotifications);
 
 
 //DOT NOT MOVE NOR USE
