@@ -92,4 +92,28 @@ export class ApiService {
       });
     });
   }
+
+  public sendMessage(sendMessageObject){
+    if(!sendMessageObject.content){
+      this.events.onAlertEvent.emit('Message not sent. You must provide some content for your message')
+      return;
+    }
+
+    let requestObject = {
+      location: `users/send-message/${sendMessageObject.id}`,
+      type: 'POST',
+      body: {
+        content: sendMessageObject.content
+      }
+    }
+    return new Promise((resolve, reject)=> {
+      this.makeRequest(requestObject).then((val)=>{
+        console.log(val);
+        if(val.statusCode == 201){
+          this.events.onAlertEvent.emit('successfully sent a message.')
+        }
+        resolve(val);
+      })
+    })
+  }
 }

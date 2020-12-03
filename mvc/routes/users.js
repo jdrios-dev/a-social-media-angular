@@ -16,6 +16,7 @@ router.post('/resolve-friend-request/:from/:to', middleware.authorize , usersCtr
 router.post('/create-post', middleware.authorize , usersCtrl.createPost);
 router.post('/like-unlike/:ownerid/:postid', middleware.authorize , usersCtrl.likeUnlike);
 router.post('/post-comment/:ownerid/:postid', middleware.authorize , usersCtrl.postCommentOnPost);
+router.post('/send-message/:to', middleware.authorize , usersCtrl.sendMessage);
 
 
 //DOT NOT MOVE NOR USE

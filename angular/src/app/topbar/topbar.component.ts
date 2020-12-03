@@ -49,6 +49,11 @@ export class TopbarComponent implements OnInit {
       this.profilePicture = data.profile_image;
     });
 
+    let updateMessageEvent = this.events.updateSendMessageObjectEvent.subscribe((d)=>{
+      this.sendMessageObject.id = d.id;
+      this.sendMessageObject.name = d.name;
+    })
+
     let requestObject = {
       location: `users/get-user-data/${this.usersId}`,
       type: 'GET',
@@ -61,7 +66,8 @@ export class TopbarComponent implements OnInit {
     this.subscriptions.push(
       friendRequestEvent,
       alertEvent,
-      userDataEvent
+      userDataEvent,
+      updateMessageEvent
     )
 
   }
@@ -70,9 +76,20 @@ export class TopbarComponent implements OnInit {
   public usersName: string;
   public usersId: string = '';
   public alertMessage: string = '';
+  public profilePicture: string = 'default-avatar';
   public userData: object;
   public numberOfFriendRequests: number ;
-  public profilePicture: string = 'default-avatar';
+
+  public sendMessageObject = {
+    id: '',
+    name: '',
+    content: '',
+  }
+
+  public sendMessage(){
+    this.api.sendMessage(this.sendMessageObject);
+    this.sendMessageObject.content='';
+  }
 
   private subscriptions = [];
 

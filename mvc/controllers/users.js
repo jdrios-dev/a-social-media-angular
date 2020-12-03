@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const Post = mongoose.model('Post');
 const Comment = mongoose.model('Comment');
+const Message = mongoose.model('Message');
 const timeAgo = require("time-ago");
+const { NotFound } = require('http-errors');
 
 
 const containsDuplicate = function(array){
@@ -339,7 +341,76 @@ const postCommentOnPost = function({body, payload, params}, res){
   });
 }
 
+const sendMessage = function({body, payload, params}, res){
+  let from = payload._id;
+  let to = params.to;
 
+  let fromPromise = new Promise(function(resolve, reject){
+    User.findById(from, 'messages', (err, user) => {
+      if(err) { return res.json({ err: err }); }
+      from = user;
+      resolve(user);
+    })
+  })
+
+  let toPromise = new Promise(function(resolve, reject){
+    User.findById(to, 'messages', (err, user) => {
+      if(err) { return res.json({ err: err }); }
+      to = user;
+      resolve(user);
+    })
+  })
+
+  let sendMessagePromise = Promise.all([fromPromise, toPromise]).then(()=>{
+
+    function hasMessageFrom(messages, id){
+      for(let message of messages){
+        if(message.from_id == id){
+          return message;
+        }
+      }
+    }
+
+    function sendMessageTo(to, from){
+      return new Promise(function(resolve, reject){
+        if(foundMessage = hasMessageFrom(to.messages, from._id)){
+          foundMessage.content.push(message);
+          to.save((err, user)=> {
+            if(err) { return res.json({ err: err }); }
+            resolve(user);
+          });
+        } else {
+          let newMessage = new Message();
+          newMessage.from_id = from._id;
+          newMessage.content = [message];
+
+          to.messages.push(newMessage);
+          to.save((err, user) => {
+            if(err) { return res.json({ err: err }); }
+            resolve(user);
+          })
+        }
+      })
+    }
+
+    let message = {
+      messenger: from._id,
+      message: body.content
+    }
+
+    let sendMessageToRecipient = sendMessageTo(to, from);
+    let sendMessageToAuthor = sendMessageTo(from, to)
+
+    return new Promise(function(resolve, reject){
+      Promise.all([sendMessageToRecipient, sendMessageToAuthor]).then(()=> {
+        resolve()
+      });
+    });
+  });
+  sendMessagePromise.then(() => {
+    return res.statusJson(201, { message: 'Sending message' })
+  })
+}
 
 
 
@@ -376,5 +447,6 @@ module.exports = {
   resolveFriendRequest,
   createPost,
   likeUnlike,
-  postCommentOnPost
+  postCommentOnPost,
+  sendMessage
 }
