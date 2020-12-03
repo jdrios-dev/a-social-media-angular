@@ -36,17 +36,17 @@ export class TopbarComponent implements OnInit {
     this.usersId = this.storage.getParsedToken()._id;
 
     let friendRequestEvent =this.events.updateNumOfFriendRequestEvent.subscribe((msg)=> {
-      this.numberOfFriendRequests--;
+      this.notifications.friendRequest--;
     });
 
     let alertEvent = this.events.onAlertEvent.subscribe((msg)=> {
       this.alertMessage = msg;
     });
 
-    let userDataEvent = this.centralUserData.getUserData.subscribe((data) => {
-      this.userData = data;
-      this.numberOfFriendRequests = data.friend_requests.length;
-      this.profilePicture = data.profile_image;
+    let userDataEvent = this.centralUserData.getUserData.subscribe((user) => {
+      this.notifications.friendRequest = user.friend_requests.length;
+      this.notifications.messages = user.new_message_notifications.length;
+      this.profilePicture = user.profile_image;
     });
 
     let updateMessageEvent = this.events.updateSendMessageObjectEvent.subscribe((d)=>{
@@ -71,29 +71,32 @@ export class TopbarComponent implements OnInit {
     )
 
   }
-
+  private subscriptions = [];
   public query: string = '';
-  public usersName: string;
-  public usersId: string = '';
-  public alertMessage: string = '';
-  public profilePicture: string = 'default-avatar';
-  public userData: object;
-  public numberOfFriendRequests: number ;
-
   public sendMessageObject = {
     id: '',
     name: '',
     content: '',
-  }
+  };
+  public alertMessage: string = '';
+
+  //USER DATA
+  public usersName: string;
+  public usersId: string = '';
+  public profilePicture: string = 'default-avatar';
+  public messagePreviews = [];
+  public notifications = {
+    alerts: 0,
+    friendRequest: 0,
+    messages: 0
+  };
+
+  public searchForFriends(){
+    this.router.navigate(['/search-result', {query: this.query}])
+  };
 
   public sendMessage(){
     this.api.sendMessage(this.sendMessageObject);
     this.sendMessageObject.content='';
-  }
-
-  private subscriptions = [];
-
-  public searchForFriends(){
-    this.router.navigate(['/search-result', {query: this.query}])
-  }
+  };
 }

@@ -108,7 +108,6 @@ export class ApiService {
     }
     return new Promise((resolve, reject)=> {
       this.makeRequest(requestObject).then((val)=>{
-        console.log(val);
         if(val.statusCode == 201){
           this.events.onAlertEvent.emit('successfully sent a message.')
         }
