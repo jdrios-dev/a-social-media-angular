@@ -47,6 +47,9 @@ export class TopbarComponent implements OnInit {
       this.notifications.friendRequest = user.friend_requests.length;
       this.notifications.messages = user.new_message_notifications.length;
       this.profilePicture = user.profile_image;
+
+      this.setMessagesPreviews(user.messages, user.new_message_notifications);
+      console.log(this.messagePreviews);
     });
 
     let updateMessageEvent = this.events.updateSendMessageObjectEvent.subscribe((d)=>{
@@ -107,5 +110,33 @@ export class TopbarComponent implements OnInit {
 
   public resetMessageNotifications(){
     this.api.resetMessageNotifications();
+  }
+
+  private setMessagesPreviews(messages, messageNotifications){
+    for (let i = messages.length - 1; i >= 0; i--){
+      let lastMessage = messages[i].content[messages[i].content.length - 1];
+
+      let preview = {
+        messengerName: messages[i].messengerName,
+        messageContent: lastMessage.message,
+        messengerImage: '',
+        messengerId: messages[i].from_id,
+        isNew: false,
+      }
+
+      if (lastMessage.messenger == this.usersId) {
+        preview.messengerImage = this.profilePicture;
+      } else {
+        preview.messengerImage = messages[i].messengerProfileImage;
+        if (messageNotifications.includes(messages[i].from_id)) {
+          preview.isNew = true;
+        }
+      }
+      if (preview.isNew) {
+        this.messagePreviews.unshift(preview);
+      } else {
+        this.messagePreviews.push(preview);
+      }
+    }
   }
 }
