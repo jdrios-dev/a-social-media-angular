@@ -49,7 +49,6 @@ export class TopbarComponent implements OnInit {
       this.profilePicture = user.profile_image;
 
       this.setMessagesPreviews(user.messages, user.new_message_notifications);
-      console.log(this.messagePreviews);
     });
 
     let updateMessageEvent = this.events.updateSendMessageObjectEvent.subscribe((d)=>{
@@ -138,5 +137,9 @@ export class TopbarComponent implements OnInit {
         this.messagePreviews.push(preview);
       }
     }
+  }
+
+  public messageLink(messageId){
+    this.router.navigate(['/messages'], { state: { data: { msgId: messageId } } })
   }
 }
