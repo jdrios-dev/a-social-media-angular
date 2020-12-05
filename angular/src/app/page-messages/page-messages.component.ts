@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ApiService } from '../api.service';
-import { UserDataService } from '../user-data.service';
 import { AutoUnsubscribe } from '../unsubscribe';
+import { EventEmitterService } from '../event-emitter.service';
 
 
 @Component({
@@ -15,7 +15,7 @@ export class PageMessagesComponent implements OnInit {
   constructor(
     private title: Title,
     private api: ApiService,
-    private centralUserData: UserDataService
+    private events: EventEmitterService
   ) { }
 
   ngOnInit(): void {
@@ -26,7 +26,7 @@ export class PageMessagesComponent implements OnInit {
       this.activeMessage.fromId = history.state.data.msgId
     }
 
-    let UserDataEvent = this.centralUserData.getUserData.subscribe((user)=>{
+    let UserDataEvent = this.events.getUserData.subscribe((user)=>{
       if(!user.messages.length) { return; }
       this.activeMessage.fromId = this.activeMessage.fromId || user.messages[0].from_id;
       this.messages = user.messages.reverse();

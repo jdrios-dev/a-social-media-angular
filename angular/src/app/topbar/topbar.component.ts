@@ -8,7 +8,6 @@ import { LocalStorageService } from '../local-storage.service';
 import { EventEmitterService } from '../event-emitter.service';
 import { AuthService } from '../auth.service';
 import { ApiService } from '../api.service';
-import { UserDataService } from '../user-data.service';
 
 
 
@@ -28,7 +27,6 @@ export class TopbarComponent implements OnInit {
     public api: ApiService,
     public events: EventEmitterService,
     public storage: LocalStorageService,
-    public centralUserData: UserDataService,
   ) { }
 
   ngOnInit(): void {
@@ -43,7 +41,7 @@ export class TopbarComponent implements OnInit {
       this.alertMessage = msg;
     });
 
-    let userDataEvent = this.centralUserData.getUserData.subscribe((user) => {
+    let userDataEvent = this.events.getUserData.subscribe((user) => {
       this.notifications.friendRequest = user.friend_requests.length;
       this.notifications.messages = user.new_message_notifications.length;
       this.profilePicture = user.profile_image;
@@ -66,7 +64,7 @@ export class TopbarComponent implements OnInit {
       authorize: true
     }
     this.api.makeRequest(requestObject).then((val)=> {
-      this.centralUserData.getUserData.emit(val.user)
+      this.events.getUserData.emit(val.user)
     });
 
     this.subscriptions.push(

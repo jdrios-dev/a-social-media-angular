@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
 import { ApiService } from '../api.service';
-import { UserDataService } from '../user-data.service';
+//import { UserDataService } from '../user-data.service';
 import { ActivatedRoute } from '@angular/router';
 import { EventEmitterService } from '../event-emitter.service';
 import { AutoUnsubscribe } from '../unsubscribe';
@@ -19,7 +19,7 @@ export class PageProfileComponent implements OnInit {
   constructor(
     private title: Title,
     private api: ApiService,
-    private centralUserData: UserDataService,
+    //private centralUserData: UserDataService,
     private route: ActivatedRoute,
     public events: EventEmitterService,
     @Inject(DOCUMENT) private document: Document,
@@ -29,7 +29,7 @@ export class PageProfileComponent implements OnInit {
     this.title.setTitle('Your Profile.');
     this.document.getElementById('sidebarToggleTop').classList.add('d-none');
 
-    let userDataEvent = this.centralUserData.getUserData.subscribe((user)=>{
+    let userDataEvent = this.events.getUserData.subscribe((user)=>{
 
       this.route.params.subscribe((params)=> {
         this.showPosts = 6;
