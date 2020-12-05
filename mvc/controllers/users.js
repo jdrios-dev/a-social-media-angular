@@ -5,7 +5,6 @@ const Post = mongoose.model('Post');
 const Comment = mongoose.model('Comment');
 const Message = mongoose.model('Message');
 const timeAgo = require("time-ago");
-const { NotFound } = require('http-errors');
 
 
 const containsDuplicate = function(array){
@@ -458,6 +457,18 @@ const resetMessageNotifications = function({payload}, res){
   })
 }
 
+const deleteMessage = function({payload, params }, res){
+
+  User.findById(payload._id, (err, user)=>{
+    if (err) { return res.send({ error: err }); }
+    const message = user.messages.id(params.messageid).remove();
+
+    user.save(()=>{
+      if (err) { return res.send({ error: err }); }
+      return res.statusJson(201, { message: 'Deleted Message'});
+    });
+  });
+}
 
 
 
@@ -493,5 +504,6 @@ module.exports = {
   likeUnlike,
   postCommentOnPost,
   sendMessage,
-  resetMessageNotifications
+  resetMessageNotifications,
+  deleteMessage
 }

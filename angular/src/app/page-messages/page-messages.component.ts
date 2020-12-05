@@ -27,8 +27,9 @@ export class PageMessagesComponent implements OnInit {
     }
 
     let UserDataEvent = this.centralUserData.getUserData.subscribe((user)=>{
+      if(!user.messages.length) { return; }
       this.activeMessage.fromId = this.activeMessage.fromId || user.messages[0].from_id;
-      this.messages = user.messages;
+      this.messages = user.messages.reverse();
       this.usersName = user.name;
       this.usersId = user._id;
       this.usersProfileImage = user.profile_image;
@@ -50,6 +51,7 @@ export class PageMessagesComponent implements OnInit {
   public usersProfileImage = 'default-avatar';
   public usersName = '';
   public usersId = '';
+  public newMessage = '';
   private subscriptions = [];
 
   public setActiveMessage(id){
@@ -82,5 +84,62 @@ export class PageMessagesComponent implements OnInit {
         }
       }
     }
+  }
+
+  public sendMessage() {
+    if(!this.newMessage) { return; }
+
+    let obj = {
+      content: this.newMessage,
+      id: this.activeMessage.fromId
+    }
+
+    let groups = this.activeMessage.messageGroups;
+    if(groups[groups.length - 1 ].isMe){
+      groups[groups.length - 1 ].messages.push(this.newMessage);
+    } else {
+      let newGroup = {
+        image: this.usersProfileImage,
+        name: this.usersName,
+        id: this.usersId,
+        messages: [this.newMessage],
+        isMe: true
+      }
+      groups.push(newGroup);
+    }
+
+    for(let message of this.messages){
+      if(message.from_id == this.activeMessage.fromId){
+        let newContent = {
+          message: this.newMessage,
+          messenger: this.usersId
+        }
+        message.content.push(newContent);
+      }
+    }
+
+    this.api.sendMessage(obj, false).then((val)=> {
+      this.newMessage = '';
+    })
+  }
+
+  public deleteMessage(msgId){
+    console.log('Delete MSG', msgId);
+    let requestObject = {
+      location: `users/delete-message/${msgId}`,
+      type: 'POST'
+    }
+
+    this.api.makeRequest(requestObject).then((val)=>{
+      if(val.statusCode == 201){
+        for(let i = 0; i < this.messages.length; i++){
+          if(this.messages[i]._id == msgId) {
+            this.messages.splice(i, 1);
+            this.setActiveMessage(this.messages[0].from_id);
+            break;
+          }
+        }
+      }
+    });
   }
 }

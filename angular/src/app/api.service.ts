@@ -93,7 +93,7 @@ export class ApiService {
     });
   }
 
-  public sendMessage(sendMessageObject){
+  public sendMessage(sendMessageObject, showAlerts = true){
     if(!sendMessageObject.content){
       this.events.onAlertEvent.emit('Message not sent. You must provide some content for your message')
       return;

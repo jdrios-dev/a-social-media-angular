@@ -18,6 +18,7 @@ router.post('/like-unlike/:ownerid/:postid', middleware.authorize , usersCtrl.li
 router.post('/post-comment/:ownerid/:postid', middleware.authorize , usersCtrl.postCommentOnPost);
 router.post('/send-message/:to', middleware.authorize , usersCtrl.sendMessage);
 router.post('/reset-message-notification', middleware.authorize , usersCtrl.resetMessageNotifications);
+router.post('/delete-message/:messageid', middleware.authorize , usersCtrl.deleteMessage);
 
 
 //DOT NOT MOVE NOR USE
