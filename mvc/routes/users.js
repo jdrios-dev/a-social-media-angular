@@ -31,6 +31,7 @@ router.post('/delete-message/:messageid', middleware.authorize , usersCtrl.delet
 
 //Misc Routes
 router.post('/bestie-enemy-toggler/:userid', middleware.authorize , usersCtrl.bestiesEnemyToggle);
+router.post('/reset-alert-notifications', middleware.authorize , usersCtrl.resetAlertNotifications);
 
 
 

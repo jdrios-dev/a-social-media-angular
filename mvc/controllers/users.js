@@ -81,14 +81,14 @@ const alertUser = function(fromUser, toId, type, postContent){
       if (err) { reject('Error', err); return res.json({ err: err }); }
 
       user.new_notifications++;
-      user.notifications.push(JSON.stringify(alert));
+      user.notifications.splice(18);
+      user.notifications.unshift(JSON.stringify(alert));
       user.save((err) => {
         if (err) { reject('Error', err); return res.json({ err: err }); }
         resolve();
-      })
-
-    })
-  })
+      });
+    });
+  });
 }
 
 //Controllers
@@ -606,6 +606,16 @@ const bestiesEnemyToggle = function({ payload, params, query }, res){
   });
 }
 
+const resetAlertNotifications = function({ payload }, res){
+  User.findById(payload._id, (err, user) => {
+    if(err) { return res.json({ err: err }) }
+    user.new_notifications = 0;
+    user.save((err)=> {
+      if(err) { return res.json({ err: err }) }
+      return res.statusJson(201, { message: 'Reset Alert Notification.' })
+    });
+  });
+}
 
 //DO NOT MOVE; NOT TOUCH
 
@@ -641,5 +651,6 @@ module.exports = {
   sendMessage,
   resetMessageNotifications,
   deleteMessage,
-  bestiesEnemyToggle
+  bestiesEnemyToggle,
+  resetAlertNotifications
 }
