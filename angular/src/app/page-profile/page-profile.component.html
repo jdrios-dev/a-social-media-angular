@@ -92,6 +92,47 @@
                 </div>
               </div>
             </div>
+            <!-- BESTIES AND ENEMIES -->
+            <div
+              *ngIf="!canAddUser && canSendMessage"
+              class="text-center mt-5">
+              <div *ngIf="!isBestie && !isEnemy">
+                <div
+                  *ngIf="!maxAmountOfBesties"
+                  (click)="toggleRequest('besties');"
+                  class="hov-scale h1 font-weight-900 px-4 link text-primary  m-1">Make Bestie</div>
+
+                <div
+                  *ngIf="maxAmountOfBesties"
+                  class="w-75 mx-auto hov-scale h4 font-weight-500 p-2 px-4 link text-primary m-1">
+                  you are only allowed to have two besties.
+                </div>
+
+                  <div
+                  (click)="toggleRequest('enemies');"
+                  class="hov-scale h1 font-weight-900 px-4 link text-danger  m-1">Declare Enemie</div>
+              </div>
+
+              <div
+                (click)="toggleRequest('besties');"
+                *ngIf="isBestie"
+                class="hov-scale h2 font-weight-300 link text-primary m-1">
+                You and Sarah Parker are <span class="font-weight-900">Besties!</span>
+                <div class="h6 mt-2 text-uppercase text-dark">
+                  Click to Undo
+                </div>
+              </div>
+              <div
+                (click)="toggleRequest('enemies');"
+                *ngIf="isEnemy"
+                class="hov-scale h2 font-weight-300 link text-danger m-1">
+                You and Sarah Parker are <span class="font-weight-900">Enemies!</span>
+                <div class="h6 mt-2 text-uppercase text-dark">
+                  Click to Undo
+                </div>
+              </div>
+            </div>
+
           </div>
 
           <div id="recent-posts" class="col-lg-5 col-md-6 mt-5 mt-md-0">

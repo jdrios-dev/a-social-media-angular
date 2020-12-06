@@ -33,6 +33,12 @@ export class PageProfileComponent implements OnInit {
 
       this.route.params.subscribe((params)=> {
         this.showPosts = 6;
+
+        if(user.besties.includes(params.userid)){ this.isBestie = true };
+        if(user.enemies.includes(params.userid)){ this.isEnemy = true };
+
+        this.maxAmountOfBeties = user.besties.length >= 2;
+
         if(user._id == params.userid){
           this.setComponentValues(user)
           this.resetBooleans();
@@ -74,6 +80,10 @@ export class PageProfileComponent implements OnInit {
   public haveSentFriendRequest: boolean = false;
   public haveReceivedFriendRequest: boolean = false;
 
+  public isBestie: boolean = false;
+  public isEnemy: boolean = false;
+  public maxAmountOfBeties: boolean = false;
+
   public showMorePosts() {
     this.showPosts += 6;
   }
@@ -102,6 +112,7 @@ export class PageProfileComponent implements OnInit {
       }
     })
   }
+
   public decline() {
     this.api.resolveFriendRequest('decline', this.usersId).then((val: any)=> {
       if(val.statusCode == 201) {
@@ -122,9 +133,38 @@ export class PageProfileComponent implements OnInit {
     this.canSendMessage = false;
     this.haveReceivedFriendRequest = false;
     this.haveSentFriendRequest = false;
+    this.isBestie = false;
+    this.isEnemy = false;
+    this.maxAmountOfBeties = false;
   }
 
   public updateSendMessageObject(id, name) {
     this.events.updateSendMessageObjectEvent.emit({id, name});
+  }
+
+  public toggleRequest(toggle){
+    let requestObject = {
+      location: `users/bestie-enemy-toggler/${this.usersId}?toggle=${toggle}`,
+      type: 'POST'
+    }
+
+    this.api.makeRequest(requestObject).then((val) => {
+      if(val.statusCode == 201){
+        if (toggle == 'besties'){
+          this.isBestie = !this.isBestie
+        } else {
+          this.isEnemy = !this.isEnemy
+        }
+      }
+    })
+
+  }
+
+  public toggleBestie() {
+    console.log('toggle bestie');
+  }
+
+  public toggleEnemy() {
+    console.log('toggle enemy');
   }
 }

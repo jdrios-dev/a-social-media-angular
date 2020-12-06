@@ -29,6 +29,10 @@ router.post('/send-message/:to', middleware.authorize , usersCtrl.sendMessage);
 router.post('/reset-message-notification', middleware.authorize , usersCtrl.resetMessageNotifications);
 router.post('/delete-message/:messageid', middleware.authorize , usersCtrl.deleteMessage);
 
+//Misc Routes
+router.post('/bestie-enemy-toggler/:userid', middleware.authorize , usersCtrl.bestiesEnemyToggle);
+
+
 
 //=======================================
 //DOT NOT MOVE NOR USE // Development Only

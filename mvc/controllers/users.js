@@ -470,6 +470,39 @@ const deleteMessage = function({payload, params }, res){
   });
 }
 
+const bestiesEnemyToggle = function({ payload, params, query }, res){
+
+  let toggle = query.toggle;
+  if(toggle != 'besties' && toggle != 'enemies'){
+    return res.json({ message: 'Incorrect query supplied.' })
+  }
+
+  let myId = payload._id;
+  let friendId = params.userid;
+
+  User.findById(myId, (err, user)=> {
+    if (err) { return res.send({ error: err }); }
+    if (!user.friends.includes(friendId)){
+      return res.json({ message: ' You are not friends width this user. ' })
+    }
+
+    let arr = user[toggle];
+
+    if(arr.includes(friendId)){
+      arr.splice(arr.indexOf(friendId), 1);
+    } else {
+      if(toggle == 'besties' && user.besties.length >= 2){
+        return res.json( {message: 'You hace the max amount of besties.'} )
+      }
+      arr.push(friendId);
+    }
+
+    user.save((err)=> {
+      if (err) { return res.send({ error: err }); }
+      return res.statusJson(201, { message: 'Bestie/Enemy toggle' })
+    });
+  });
+}
 
 
 //DO NOT MOVE; NOT TOUCH
@@ -505,5 +538,6 @@ module.exports = {
   postCommentOnPost,
   sendMessage,
   resetMessageNotifications,
-  deleteMessage
+  deleteMessage,
+  bestiesEnemyToggle
 }
