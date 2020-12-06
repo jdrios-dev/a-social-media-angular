@@ -51,6 +51,48 @@ const addToPosts = function(array, user) {
   }
 }
 
+const alertUser = function(fromUser, toId, type, postContent){
+
+  return new Promise(function(resolve, reject){
+    let alert = {
+      alert_type : type,
+      from_id: fromUser._id,
+      from_name: fromUser.name
+    }
+
+    if(postContent && postContent.length > 28){
+      postContent = postContent.substring(0, 28) + '...';
+    }
+
+    switch(type){
+      case 'new_friend':
+        alert.alert_text = `${alert.from_name} has accepted your friend request.`;
+        break;
+      case 'liked_post':
+        alert.alert_text = `${alert.from_name} has like your post, '${postContent}'.`;
+        break;
+      case 'commented_post':
+        alert.alert_text = `${alert.from_name} has commented on your post, '${postContent}'.`;
+        break;
+      default: return reject('No valid type for alert.');
+    }
+
+    User.findById(toId, (err, user) => {
+      if (err) { reject('Error', err); return res.json({ err: err }); }
+
+      user.new_notifications++;
+      user.notifications.push(JSON.stringify(alert));
+      user.save((err) => {
+        if (err) { reject('Error', err); return res.json({ err: err }); }
+        resolve();
+      })
+
+    })
+  })
+}
+
+//Controllers
+
 const registerUser = function({body}, res) {
 
   if(
@@ -319,7 +361,9 @@ const resolveFriendRequest = function({query, params}, res){
     promise.then(()=> {
       user.save((err, user)=> {
         if (err) { return res.send({ error: err }); }
-        res.statusJson(201, { message:'Resolve friend request.'});
+        alertUser(user, params.from, 'new_friend').then(()=>{
+          res.statusJson(201, { message: 'Resolved friend request' })
+        })
       })
     });
   });
@@ -361,17 +405,30 @@ const likeUnlike = function({ payload, params }, res){
 
     const post = user.posts.id(params.postid);
 
-    if(post.likes.includes(payload._id)){
-      post.likes.splice(post.likes.indexOf(payload._id), 1);
-    } else {
-      post.likes.push(payload._id)
-    }
-
-    user.save((err, user)=>{
-      if(err) { return res.json({ err: err }); }
-      res.statusJson(201, { message: 'Like Or Unlike a post...' })
-    })
-  })
+    let promise = new Promise (function(resolve, reject){
+      if(post.likes.includes(payload._id)){
+        post.likes.splice(post.likes.indexOf(payload._id), 1);
+      } else {
+        post.likes.push(payload._id);
+        if(params.ownerid != payload._id){
+          User.findById(payload._id, (err, user) => {
+            if(err) { reject('Error:', err); return res.json({ err: err }); }
+            alertUser(user, params.ownerid, 'liked_post', post.content).then(()=>{
+              resolve();
+            });
+          });
+        } else {
+          resolve()
+        }
+      }
+    });
+    promise.then(()=>{
+      user.save((err, user)=>{
+        if(err) { return res.json({ err: err }); }
+        res.statusJson(201, { message: 'Like Or Unlike a post...' })
+      });
+    });
+  });
 }
 
 const postCommentOnPost = function({body, payload, params}, res){
@@ -392,10 +449,22 @@ const postCommentOnPost = function({body, payload, params}, res){
       User.findById(payload._id, "name profile_image" , (err, user)=> {
         if(err) { return res.json({ err: err }); }
 
-        return res.statusJson(201, {
-          message: "Posted Comment",
-          comment: comment,
-          commenter: user
+        let promise = new Promise(function(resolve, reject){
+          if(payload._id != params.ownerid){
+            alertUser(user, params.ownerid, 'commented_post', post.content).then(() => {
+              resolve();
+            });
+          } else {
+            resolve();
+          }
+        });
+
+        promise.then(()=>{
+          return res.statusJson(201, {
+            message: "Posted Comment",
+            comment: comment,
+            commenter: user
+          });
         });
       });
     });
