@@ -31,11 +31,14 @@ export class PageProfileComponent implements OnInit {
 
     let userDataEvent = this.events.getUserData.subscribe((user)=>{
 
+      this.besties = user.besties;
+      this.enemies = user.enemies;
+
       this.route.params.subscribe((params)=> {
         this.showPosts = 6;
 
-        if(user.besties.includes(params.userid)){ this.isBestie = true };
-        if(user.enemies.includes(params.userid)){ this.isEnemy = true };
+        this.isBestie = user.besties.some((v) => v._id == params.userid);
+        this.isEnemy = user.enemies.some((v) => v._id == params.userid);
 
         this.maxAmountOfBeties = user.besties.length >= 2;
 
@@ -82,6 +85,10 @@ export class PageProfileComponent implements OnInit {
 
   public isBestie: boolean = false;
   public isEnemy: boolean = false;
+
+  private besties = [];
+  private enemies = [];
+
   public maxAmountOfBeties: boolean = false;
 
   public showMorePosts() {
@@ -143,6 +150,16 @@ export class PageProfileComponent implements OnInit {
   }
 
   public toggleRequest(toggle){
+
+    function toggleValue(array){
+      for(let i = 0; i  < array.length; i++ ){
+        if(array[i]._id == this.usersId){
+          return array.splice(i, 1);
+        }
+      }
+      array.push({_id: this.usersId})
+    }
+
     let requestObject = {
       location: `users/bestie-enemy-toggler/${this.usersId}?toggle=${toggle}`,
       type: 'POST'
@@ -150,9 +167,12 @@ export class PageProfileComponent implements OnInit {
 
     this.api.makeRequest(requestObject).then((val) => {
       if(val.statusCode == 201){
+        toggleValue.call(this, this.besties);
+        this.maxAmountOfBeties = this.besties.length >= 2;
         if (toggle == 'besties'){
           this.isBestie = !this.isBestie
         } else {
+          toggleValue.call(this, this.enemies);
           this.isEnemy = !this.isEnemy
         }
       }

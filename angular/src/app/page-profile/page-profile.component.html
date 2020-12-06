@@ -1,21 +1,12 @@
 <div id="wrapper">
-
-
   <!-- Content Wrapper -->
   <div id="content-wrapper" class="d-flex flex-column">
-
     <!-- Main Content -->
     <div id="content" class="min-vh-100">
-
       <!-- Topbar -->
       <app-topbar></app-topbar>
-
-
       <div class="container-fluid">
-
         <div class="row mb-5 grow-1">
-
-
           <div id="me" class="col-lg-4 col-md-6 mt-5 mt-md-0">
             <div class="rounded-0 shadow card">
               <div class="rounded-0 card-header p-0 bg-white border-0">
@@ -78,8 +69,6 @@
                 </div>
               </div>
             </div>
-
-
             <div *ngIf="randomFriends.length" id="friends-list" class="card shadow rounded-0 mt-4 pb-3">
               <div class="row m-0">
                 <div *ngFor="let friend of randomFriends" class="col-xl-4 col-6 mt-5">
@@ -101,23 +90,20 @@
                   *ngIf="!maxAmountOfBesties"
                   (click)="toggleRequest('besties');"
                   class="hov-scale h1 font-weight-900 px-4 link text-primary  m-1">Make Bestie</div>
-
                 <div
                   *ngIf="maxAmountOfBesties"
                   class="w-75 mx-auto hov-scale h4 font-weight-500 p-2 px-4 link text-primary m-1">
                   you are only allowed to have two besties.
                 </div>
-
                   <div
                   (click)="toggleRequest('enemies');"
                   class="hov-scale h1 font-weight-900 px-4 link text-danger  m-1">Declare Enemie</div>
               </div>
-
               <div
                 (click)="toggleRequest('besties');"
                 *ngIf="isBestie"
                 class="hov-scale h2 font-weight-300 link text-primary m-1">
-                You and Sarah Parker are <span class="font-weight-900">Besties!</span>
+                You and {{ usersName }} are <span class="font-weight-900">Besties!</span>
                 <div class="h6 mt-2 text-uppercase text-dark">
                   Click to Undo
                 </div>
@@ -126,15 +112,13 @@
                 (click)="toggleRequest('enemies');"
                 *ngIf="isEnemy"
                 class="hov-scale h2 font-weight-300 link text-danger m-1">
-                You and Sarah Parker are <span class="font-weight-900">Enemies!</span>
+                You and {{ usersName }} are <span class="font-weight-900">Enemies!</span>
                 <div class="h6 mt-2 text-uppercase text-dark">
                   Click to Undo
                 </div>
               </div>
             </div>
-
           </div>
-
           <div id="recent-posts" class="col-lg-5 col-md-6 mt-5 mt-md-0">
             <h3 class="text-success shadow py-3 text-center bg-white rounded-pill">Recent Posts</h3>
 
@@ -162,7 +146,6 @@
             </div>
 
           </div>
-
           <div id="big-links" class="col-lg-3 col--12 mt-5 mt-lg-0">
             <div class="shadow card border-0 rounded-0 big-link bg-success text-white">
               <a routerLink="/feed" class="text-white link font-weight-500 text-center display-3">
@@ -180,13 +163,7 @@
             </div>
           </div>
         </div>
-
-
-
-
       </div>
     </div>
   </div>
-
-
 </div>
