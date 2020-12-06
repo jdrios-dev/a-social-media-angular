@@ -46,8 +46,8 @@ const addToPosts = function(array, user) {
   for( item of array) {
     item.name = user.name;
     item.ago = timeAgo.ago(item.date);
-    item.ownerid = user._id;
     item.ownerProfileImage = user.profile_image;
+    item.ownerid = user._id;
   }
 }
 
@@ -103,40 +103,57 @@ const loginUser = function(req, res){
   })(req, res);
 }
 
-const generateFeed = function({payload}, res) {
+const generateFeed = function ({ payload }, res) {
+	let posts = [];
+	let bestiePosts = [];
 
-const posts = [];
-const maxAmountOfPosts = 30;
+	let myPosts = new Promise(function (resolve, reject) {
+		User.findById(payload._id, "", { lean: true }, (err, user) => {
+			if (err) { return res.statusJson(400, { err: err }); }
+			if (!user) { return res.json(404, { message: "User does not exist." }); }
+			addToPosts(user.posts, user);
+			posts.push(...user.posts);
 
-  let myPosts = new Promise(function(resolve, reject){
-    User.findById(payload._id, 'name posts profile_image friends', {lean: true}  , (err, user)=> {
-      if(err) { return res.json({ err: err }); }
-      addToPosts(user.posts, user);
-      posts.push(...user.posts);
-      resolve(user.friends)
-    });
-  });
+			user.friends = user.friends.filter((val) => {
+				return !user.besties.includes(val);
+			});
 
-  let myFriendsPosts = myPosts.then((friendsArray)=> {
-    return new Promise(function(resolve, reject) {
-      User.find({'_id': { $in: friendsArray }}, 'name profile_image posts', { lean: true }, (err, users)=> {
-        if(err) { return res.json({ err: err }); }
-        for(user of users) {
-          addToPosts(user.posts, user);
-          posts.push(...user.posts);
-        }
-        resolve();
-      });
-    });
-  });
+			resolve(user);
+		});
+	});
 
-  myFriendsPosts.then(() => {
-    posts.sort((a, b) => (a.date > b.date) ? -1 : 1);
-    let slicePosts = posts.slice(0, maxAmountOfPosts);
-    addCommentDetails(slicePosts).then((slicePosts)=>{
-      res.statusJson(201, { posts: slicePosts })
-    })
-  });
+	function getPostsFrom(arrayOfUsers, maxAmountOfPosts, postsArray) {
+		return new Promise(function (resolve, reject) {
+			User.find({ "_id": { $in: arrayOfUsers } }, "name posts profile_image", { lean: true }, (err, users) => {
+				if (err) { reject("Error", err); return res.json({ err: err }); }
+
+				for (user of users) {
+					addToPosts(user.posts, user);
+					postsArray.push(...user.posts);
+				}
+
+				postsArray.sort((a, b) => (a.date > b.date) ? -1 : 1);
+				postsArray.splice(maxAmountOfPosts);
+
+				addCommentDetails(postsArray).then(() => {
+					resolve();
+				});
+			});
+		});
+	}
+
+
+	let myBestiesPosts = myPosts.then(({ besties }) => {
+		return getPostsFrom(besties, 4, bestiePosts);
+	});
+
+	let myFriendsPosts = myPosts.then(({ friends }) => {
+		return getPostsFrom(friends, 48, posts);
+	});
+
+	Promise.all([myBestiesPosts, myFriendsPosts]).then(() => {
+		res.statusJson(201, { posts, bestiePosts });
+	});
 }
 
 const getSearchResults = function ({query, payload}, res) {

@@ -32,18 +32,21 @@ export class PageFeedComponent implements OnInit {
     this.api.makeRequest(requestObject).then((val)=> {
 
       if(val.statusCode == 201) {
-        let fullCol1 = val.posts.filter((val, i)=> i % 4 === 0);
-        let fullCol2 = val.posts.filter((val, i)=> i % 4 === 1);
-        let fullCol3 = val.posts.filter((val, i)=> i % 4 === 2);
-        let fullCol4 = val.posts.filter((val, i)=> i % 4 === 3);
+
+        this.bestiePosts = val.bestiePosts;
+
+        let fullCol1 = val.posts.filter((val, i) => i % 4 === 0);
+        let fullCol2 = val.posts.filter((val, i) => i % 4 === 1);
+        let fullCol3 = val.posts.filter((val, i) => i % 4 === 2);
+        let fullCol4 = val.posts.filter((val, i) => i % 4 === 3);
 
         let cols = [ fullCol1, fullCol2, fullCol3, fullCol4 ];
-
         this.addPostToFeed(cols, 0, 0);
       }
-    })
+    });
   }
 
+  public bestiePosts = [];
   public posts = {
     col1: [],
     col2: [],
@@ -85,13 +88,13 @@ export class PageFeedComponent implements OnInit {
       });
   }
 
-  private addPostToFeed(array, colNumber, delay){
-    setTimeout(() => {
-      if(array[colNumber].length){
-        this.posts["col" + (colNumber + 1)].push(array[colNumber].splice(0, 1)[0]);
-        colNumber = ++colNumber % 4;
-        this.addPostToFeed(array, colNumber, 100)
-      }
-    }, delay);
-  }
+  private addPostToFeed(array, colNumber, delay) {
+		setTimeout(() => {
+			if (array[colNumber].length) {
+				this.posts["col" + (colNumber + 1)].push(array[colNumber].splice(0, 1)[0]);
+				colNumber = ++colNumber % 4;
+				this.addPostToFeed(array, colNumber, 100);
+			}
+		}, delay);
+	}
 }
