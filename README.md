@@ -16,7 +16,7 @@ Run ng serve -o
 
 ## Deploy 📦
 
-* No yet
+* https://a-social-media-angular.herokuapp.com/
 
 ## Built with 🛠️
 
