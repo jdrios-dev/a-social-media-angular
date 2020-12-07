@@ -1,4 +1,4 @@
 export const environment = {
-  baseUrl: 'https://git.heroku.com/protected-earth-29673.git',
+  baseUrl: 'https://git.heroku.com/a-social-media-angular.git',
   production: true
 };
