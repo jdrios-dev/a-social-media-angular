@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { LocalStorageService } from './local-storage.service';
 import { EventEmitterService } from './event-emitter.service';
-
+import { environment } from '../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,7 +14,7 @@ export class ApiService {
     private events: EventEmitterService,
   ) { }
 
-  private baseUrl = 'http://localhost:3000';
+  private baseUrl = environment.baseUrl;
 
   private successHandler(value) { return value; }
   private errorHandler(error) { return error; }
