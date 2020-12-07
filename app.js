@@ -8,7 +8,7 @@ const passport = require('passport');
 
 require('./mvc/models/db')
 
-const indexRouter = require('./mvc/routes/index');
+//const indexRouter = require('./mvc/routes/index');
 const usersRouter = require('./mvc/routes/users');
 
 const app = express();
