@@ -4,7 +4,7 @@ A red social app, without fake users, really.
 
 ## Starting with 🚀
 
-git clone https://github.com/jdrios-dev/a-social-media-angula
+git clone https://github.com/jdrios-dev/a-social-media-angular
 
 ## Installation 🔧
 
