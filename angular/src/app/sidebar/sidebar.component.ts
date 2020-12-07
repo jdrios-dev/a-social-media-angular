@@ -19,18 +19,15 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     let userDataEvent = this.events.getUserData.subscribe((user)=>{
-      this.userData = user;
-      this.userDataId = user._id;
+      this.usersId = user._id;
       this.enemies = user.enemies;
       this.besties = user.besties;
-      this
     })
 
     this.subscriptions.push( userDataEvent );
   }
 
-  public userData = {};
-  public userDataId = '';
+  public usersId = '';
   public besties = [];
   public enemies = [];
   private subscriptions = [];

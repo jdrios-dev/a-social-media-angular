@@ -70,7 +70,7 @@ export class PageProfileComponent implements OnInit {
   private subscriptions = [];
 
   public randomFriends: string[] = [];
-  public totalfriends: number;
+  public totalfriends: number = 0;
   public posts: object[] = [];
   public showPosts: number = 6;
   public profilePicture: string = 'default-avatar';

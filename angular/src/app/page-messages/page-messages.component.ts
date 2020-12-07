@@ -124,7 +124,6 @@ export class PageMessagesComponent implements OnInit {
   }
 
   public deleteMessage(msgId){
-    console.log('Delete MSG', msgId);
     let requestObject = {
       location: `users/delete-message/${msgId}`,
       type: 'POST'
@@ -135,6 +134,9 @@ export class PageMessagesComponent implements OnInit {
         for(let i = 0; i < this.messages.length; i++){
           if(this.messages[i]._id == msgId) {
             this.messages.splice(i, 1);
+            if(!this.messages.length){
+              return;
+            }
             this.setActiveMessage(this.messages[0].from_id);
             break;
           }

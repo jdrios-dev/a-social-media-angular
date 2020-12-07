@@ -233,7 +233,8 @@ const makeFriendRequest = function({params}, res) {
 
 const getUserData = function({params}, res){
   User.findById(params.userid, '-salt -password', {lean: true}, (err, user) => {
-    if( err ){ return res.json({ err: err }); }
+    if (err) { return res.statusJson(400, { err: err }); }
+    if (!user) { return res.json(404, { message: "User does not exist." }); }
 
     function getRandomFriends(friendList){
       let copyOfFriendsList = Array.from(friendList);

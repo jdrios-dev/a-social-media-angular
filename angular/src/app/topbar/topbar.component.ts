@@ -66,7 +66,13 @@ export class TopbarComponent implements OnInit {
       authorize: true
     }
     this.api.makeRequest(requestObject).then((val)=> {
-      this.events.getUserData.emit(val.user)
+      if(val.statusCode == 404){
+        return this.auth.logout();
+      }
+
+      if(val.statusCode == 200){
+        this.events.getUserData.emit(val.user)
+      }
     });
 
     this.subscriptions.push(
@@ -88,7 +94,7 @@ export class TopbarComponent implements OnInit {
   public alertMessage: string = '';
 
   //USER DATA
-  public usersName: string;
+  public usersName: string = '';
   public usersId: string = '';
   public profilePicture: string = 'default-avatar';
   public messagePreviews = [];
@@ -191,6 +197,5 @@ export class TopbarComponent implements OnInit {
       this.alerts.push(newAlert)
     }
   }
-
 
 }
